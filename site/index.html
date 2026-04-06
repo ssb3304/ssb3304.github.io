@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seungbeom Seo — Neuroscience &amp; BCI Researcher</title>
+  <meta name="description" content="Seungbeom Seo — M.S. student in Biomedical Engineering at UNIST, researching Brain-Computer Interfaces, Neural Decoding, and Cognitive Neuroscience.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Cursor glow -->
+  <div class="cursor-glow" aria-hidden="true"></div>
+
+  <!-- Particle canvas -->
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+  <!-- Scroll progress bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="#hero" class="nav__logo">S<span class="accent">.</span>Seo</a>
+      <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav__links" id="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#research">Research</a></li>
+        <li><a href="#publications">Publications</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#personal">Personal</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="hero">
+    <div class="hero__content">
+      <p class="hero__greeting reveal">Hello, I'm</p>
+      <h1 class="hero__name reveal">
+        <span class="hero__name-line">Seungbeom</span>
+        <span class="hero__name-line accent">Seo</span>
+      </h1>
+      <div class="hero__tagline reveal">
+        <span class="tag">M.S. Student</span>
+        <span class="tag-sep">&middot;</span>
+        <span class="tag">Neuroscience</span>
+        <span class="tag-sep">&middot;</span>
+        <span class="tag">BCI</span>
+      </div>
+      <p class="hero__subtitle reveal">Decoding the brain, one signal at a time.</p>
+      <a href="#about" class="hero__cta reveal">
+        <span>Explore My Work</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+      </a>
+    </div>
+    <div class="hero__scroll-indicator" aria-hidden="true">
+      <div class="hero__scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="section" id="about">
+    <div class="container">
+      <h2 class="section__title reveal">
+        <span class="section__number">01.</span> About
+      </h2>
+      <div class="about__grid">
+        <div class="about__photo reveal">
+          <div class="about__photo-frame">
+            <div class="about__photo-placeholder">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span>Photo</span>
+            </div>
+          </div>
+        </div>
+        <div class="about__text reveal">
+          <p>About section content coming soon.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Research -->
+  <section class="section section--alt" id="research">
+    <div class="container">
+      <h2 class="section__title reveal">
+        <span class="section__number">02.</span> Research
+      </h2>
+      <p class="section__intro reveal">My research lies at the intersection of neuroscience and engineering, focusing on understanding and interfacing with the human brain.</p>
+      <div class="research__grid">
+        <div class="research__card reveal magnetic" data-delay="0">
+          <div class="research__card-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <h3>BCI / BMI</h3>
+          <p>Brain-Computer &amp; Brain-Machine Interfaces enabling direct neural communication with external devices.</p>
+        </div>
+        <div class="research__card reveal magnetic" data-delay="1">
+          <div class="research__card-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          </div>
+          <h3>Neural Encoding &amp; Decoding</h3>
+          <p>Decoding vision and motor control signals from neural activity to understand brain representations.</p>
+        </div>
+        <div class="research__card reveal magnetic" data-delay="2">
+          <div class="research__card-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <h3>Cognitive Neuroscience</h3>
+          <p>Investigating the neural mechanisms underlying cognition, perception, and decision-making.</p>
+        </div>
+        <div class="research__card reveal magnetic" data-delay="3">
+          <div class="research__card-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <h3>Brain Imaging</h3>
+          <p>Leveraging neuroimaging modalities (EEG, fMRI) to observe and analyze brain structure and function.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Publications -->
+  <section class="section" id="publications">
+    <div class="container">
+      <h2 class="section__title reveal">
+        <span class="section__number">03.</span> Publications
+      </h2>
+      <ol class="pub__list">
+        <li class="pub__item reveal">
+          <div class="pub__year">2026</div>
+          <div class="pub__details">
+            <h3 class="pub__title">Effects of Cognitive Demand Reduction on Choice Overload</h3>
+            <p class="pub__authors"><strong>Seo*</strong>, Lee*, Lee &amp; Kim</p>
+            <p class="pub__venue"><em>bioRxiv</em> (Preprint)</p>
+          </div>
+        </li>
+        <li class="pub__item reveal">
+          <div class="pub__year">2024</div>
+          <div class="pub__details">
+            <h3 class="pub__title">Low-frequency EEG power and coherence differ between Drug-induced Parkinsonism and Parkinson's Disease</h3>
+            <p class="pub__authors"><strong>Seo*</strong>, Kim*, Kim, Kim, Kang &amp; Chung</p>
+            <p class="pub__venue"><em>Clinical Neurophysiology</em>, 168, 131&ndash;138</p>
+          </div>
+        </li>
+        <li class="pub__item reveal">
+          <div class="pub__year">2023</div>
+          <div class="pub__details">
+            <h3 class="pub__title">Viewer Emotional Response to Webtoon-Based Drama: An EEG Analysis</h3>
+            <p class="pub__authors">Park, Wang, Lee, <strong>Seo</strong>, Lee &amp; Kim</p>
+            <p class="pub__venue"><em>International Journal of Human-Computer Interaction</em>, 1&ndash;15</p>
+          </div>
+        </li>
+        <li class="pub__item reveal">
+          <div class="pub__year">2021</div>
+          <div class="pub__details">
+            <h3 class="pub__title">Computational and Histological Analyses for Investigating Mechanical Interaction of Thermally Drawn Fiber Implants with Brain Tissue</h3>
+            <p class="pub__authors">Kim, Sung, Lee, Won, Jeon, <strong>Seo</strong>, Yoon &amp; Park</p>
+            <p class="pub__venue"><em>Micromachines</em>, 12(4), 394</p>
+          </div>
+        </li>
+        <li class="pub__item reveal">
+          <div class="pub__year">2021</div>
+          <div class="pub__details">
+            <h3 class="pub__title">The Effect of OTT Subscription Fee on Content Engagement</h3>
+            <p class="pub__authors">Lee, <strong>Seo</strong>, Lee &amp; Kim</p>
+            <p class="pub__venue"><em>The Journal of Korean Institute of Communications and Information Sciences</em>, 46(3), 572&ndash;582</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section class="section section--alt" id="experience">
+    <div class="container">
+      <h2 class="section__title reveal">
+        <span class="section__number">04.</span> Experience
+      </h2>
+      <div class="timeline">
+        <!-- Education -->
+        <div class="timeline__group reveal">
+          <h3 class="timeline__group-title">Education</h3>
+          <div class="timeline__item">
+            <div class="timeline__marker"></div>
+            <div class="timeline__range">2025 &ndash; Present</div>
+            <div class="timeline__content">
+              <h4>M.S. in Biomedical Engineering</h4>
+              <p class="timeline__org">UNIST</p>
+              <p class="timeline__desc">BCI Lab, advised by Prof. Sung-Phil Kim</p>
+            </div>
+          </div>
+          <div class="timeline__item">
+            <div class="timeline__marker"></div>
+            <div class="timeline__range">2019 &ndash; 2025</div>
+            <div class="timeline__content">
+              <h4>B.S. in Biomedical Engineering / Electrical Engineering</h4>
+              <p class="timeline__org">UNIST</p>
+            </div>
+          </div>
+        </div>
+        <!-- Service -->
+        <div class="timeline__group reveal">
+          <h3 class="timeline__group-title">Military Service</h3>
+          <div class="timeline__item">
+            <div class="timeline__marker"></div>
+            <div class="timeline__range">2023 &ndash; 2024</div>
+            <div class="timeline__content">
+              <h4>Republic of Korea Air Force</h4>
+              <p class="timeline__desc">Mandatory Military Service</p>
+            </div>
+          </div>
+        </div>
+        <!-- Research -->
+        <div class="timeline__group reveal">
+          <h3 class="timeline__group-title">Research Experience</h3>
+          <div class="timeline__item">
+            <div class="timeline__marker"></div>
+            <div class="timeline__range">2020 &ndash; Present</div>
+            <div class="timeline__content">
+              <h4>BCI Lab</h4>
+              <p class="timeline__org">UNIST</p>
+            </div>
+          </div>
+          <div class="timeline__item">
+            <div class="timeline__marker"></div>
+            <div class="timeline__range">Spring 2022</div>
+            <div class="timeline__content">
+              <h4>Decision Neuroscience Lab</h4>
+              <p class="timeline__org">UNIST</p>
+            </div>
+          </div>
+          <div class="timeline__item">
+            <div class="timeline__marker"></div>
+            <div class="timeline__range">Summer 2020</div>
+            <div class="timeline__content">
+              <h4>Bio and Neural Interfaces Lab</h4>
+              <p class="timeline__org">KAIST</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Personal -->
+  <section class="section" id="personal">
+    <div class="container">
+      <h2 class="section__title reveal">
+        <span class="section__number">05.</span> Personal
+      </h2>
+      <div class="personal__placeholder reveal">
+        <p>Personal section coming soon.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="section section--alt" id="contact">
+    <div class="container container--narrow">
+      <h2 class="section__title reveal">
+        <span class="section__number">06.</span> Contact
+      </h2>
+      <p class="contact__intro reveal">Interested in collaborating or have questions about my research? I'd love to hear from you.</p>
+      <div class="contact__links reveal">
+        <a href="mailto:ssb3304@gmail.com" class="contact__link magnetic">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span>ssb3304@gmail.com</span>
+        </a>
+        <a href="#" class="contact__link magnetic" aria-label="Google Scholar">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14l-8-5.5L12 3l8 5.5z"/><path d="M4 8.5V17a1 1 0 001 1h14a1 1 0 001-1V8.5"/><circle cx="12" cy="15" r="3"/></svg>
+          <span>Google Scholar</span>
+        </a>
+        <a href="#" class="contact__link magnetic" aria-label="GitHub">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          <span>GitHub</span>
+        </a>
+        <a href="#" class="contact__link magnetic" aria-label="LinkedIn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          <span>LinkedIn</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 Seungbeom Seo. Built with care.</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

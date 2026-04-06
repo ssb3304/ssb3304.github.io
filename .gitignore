@@ -1,0 +1,14 @@
+# Raw personal content (not for public repo)
+content/
+
+# Office documents
+*.docx
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local launcher scripts
+claude_homepage.bat
+claude_homepage_continue.bat
