@@ -9,13 +9,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Architecture
 
 ```
-site/           ← GitHub Pages 배포 대상 (루트)
+docs/           ← GitHub Pages 배포 대상 (main branch /docs folder)
   index.html    ← 메인 페이지
   css/          ← 스타일시트
   js/           ← 스크립트
   images/       ← 웹에서 사용하는 이미지 (최적화된 버전)
   documents/    ← 다운로드용 파일 (CV PDF 등)
-content/        ← 원본 콘텐츠 소스 (배포 안 됨)
+content/        ← 원본 콘텐츠 소스 (배포 안 됨, .gitignore됨)
   profile/      ← 프로필 사진, 자기소개 원문
   research/     ← 연구 관련 자료, 논문 정보
   personal/     ← 취미, 활동 사진, 개인 에세이
@@ -23,9 +23,11 @@ content/        ← 원본 콘텐츠 소스 (배포 안 됨)
 
 ## Deployment
 
-- **호스팅**: GitHub Pages (`username.github.io`)
-- **배포 폴더**: `site/` 디렉토리를 GitHub Pages source로 설정
-- **배포 방법**: `site/` 내용을 GitHub repo에 push하면 자동 배포
+- **호스팅**: GitHub Pages — https://ssb3304.github.io
+- **저장소**: https://github.com/ssb3304/ssb3304.github.io
+- **배포 설정**: GitHub Pages source = main branch, `/docs` folder
+- **배포 방법**: 커밋 후 `git push` → 1~2분 후 라이브 반영
+- **버전 관리**: 모든 수정사항은 commit으로 기록하여 rollback 가능
 
 ## Design Principles
 
@@ -47,15 +49,18 @@ content/        ← 원본 콘텐츠 소스 (배포 안 됨)
 
 ```bash
 # 로컬 미리보기 (Python 내장 서버)
-cd site && python -m http.server 8000
+cd docs && python -m http.server 8000
 
-# 이미지 최적화 후 site/images/로 복사하는 것은 수동으로 진행
+# 변경사항 배포
+git add docs/
+git commit -m "..."
+git push
 ```
 
 ## Key Conventions
 
-- 모든 배포 파일은 `site/` 안에 위치
-- `content/`는 원본 자료 보관용, 직접 배포되지 않음
+- 모든 배포 파일은 `docs/` 안에 위치
+- `content/`는 원본 자료 보관용, .gitignore되어 푸시 안 됨
 - 이미지 파일명은 영문 소문자, 하이픈 구분 (e.g., `profile-photo.jpg`)
 - CSS는 커스텀 작성 (프레임워크 미사용, 필요시 추가 가능)
 - 한국어/영어 이중 언어 지원 가능성 고려
