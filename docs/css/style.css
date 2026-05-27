@@ -1263,3 +1263,14 @@ body:hover .cursor-glow {
     gap: 1.25rem;
   }
 }
+
+/* Casual image-download deterrent. Screenshots cannot be blocked. */
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}

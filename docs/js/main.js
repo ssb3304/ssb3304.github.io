@@ -303,4 +303,19 @@
     setTimeout(typeChar, 1200);
   }
 
+  // ── Image Protection ─────────────────────────────────────────
+  // Blocks right-click and drag on <img> elements. Screenshots and
+  // devtools-based extraction are NOT blocked (browser limitation).
+  document.addEventListener('contextmenu', (e) => {
+    if (e.target.tagName === 'IMG') {
+      e.preventDefault();
+    }
+  });
+
+  document.addEventListener('dragstart', (e) => {
+    if (e.target.tagName === 'IMG') {
+      e.preventDefault();
+    }
+  });
+
 })();
