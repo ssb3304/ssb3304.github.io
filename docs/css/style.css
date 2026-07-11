@@ -150,6 +150,24 @@ ul, ol {
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
 
+/* Backdrop behind the open mobile drawer */
+.nav__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(6, 9, 16, 0.55);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease-out);
+}
+
+.nav__backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .nav__inner {
   max-width: var(--container-max);
   margin: 0 auto;
@@ -188,6 +206,9 @@ ul, ol {
   color: var(--text-secondary);
   position: relative;
   padding: 0.25rem 0;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   transition: color 0.25s var(--ease-out);
 }
 
@@ -218,11 +239,15 @@ ul, ol {
   display: none;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   gap: 5px;
   background: none;
   border: none;
   cursor: pointer;
   padding: 0.5rem;
+  /* Meet the 44px minimum touch-target size */
+  min-width: 44px;
+  min-height: 44px;
   z-index: 10002;
 }
 
@@ -251,6 +276,8 @@ ul, ol {
 .hero {
   position: relative;
   min-height: 100vh;
+  /* svh keeps the scroll indicator above the mobile browser toolbar */
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -412,7 +439,8 @@ ul, ol {
 /* --- About --- */
 .about__grid {
   display: grid;
-  grid-template-columns: 240px 1fr;
+  /* 260px matches the photo frame width so it doesn't jut into the gutter */
+  grid-template-columns: 260px 1fr;
   gap: 3rem;
   align-items: start;
 }
@@ -664,7 +692,7 @@ ul, ol {
 
 .timeline__marker {
   position: absolute;
-  left: -2.4rem;
+  left: -2.28rem;
   top: 0.35rem;
   width: 10px;
   height: 10px;
@@ -802,6 +830,9 @@ ul, ol {
     right: 0;
     width: min(320px, 85vw);
     height: 100vh;
+    height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     flex-direction: column;
     background: rgba(15, 20, 32, 0.98);
     backdrop-filter: blur(20px);
@@ -882,9 +913,19 @@ ul, ol {
   }
 
   .timeline__marker {
-    left: -1.9rem;
+    /* Center the dot on the 1px timeline rule at this padding */
+    left: -1.72rem;
     width: 8px;
     height: 8px;
+  }
+
+  /* Conference thumbnails: 4-across becomes ~51px squares on phones — go 2-up */
+  .conf-card__gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .conf-thumb__tag {
+    font-size: 0.65rem;
   }
 }
 
@@ -1388,5 +1429,49 @@ ul, ol {
   .js .reveal {
     opacity: 1 !important;
     transform: none !important;
+  }
+}
+
+/* ============================================================
+   Touch fallbacks — no usable :hover on touch devices
+   ============================================================ */
+@media (hover: none) {
+  /* The personal card fan-out is hover-only, so on touch the cards stay
+     overlapped. Lay them out as a horizontal, swipeable, snapping row instead. */
+  .personal__stack {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 1rem;
+    min-height: 0;
+    padding: 0.5rem 1rem 1.5rem;
+    perspective: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .personal__card,
+  .personal__card[data-i="0"],
+  .personal__card[data-i="1"],
+  .personal__card[data-i="2"],
+  .personal__card[data-i="3"] {
+    position: static;
+    transform: none !important;
+    flex: 0 0 66%;
+    max-width: 240px;
+    scroll-snap-align: center;
+  }
+
+  /* Publication rows: reveal the external-link arrow persistently so it reads
+     as a tappable link (the hover reveal never fires on touch). */
+  .pub__arrow {
+    opacity: 1;
+    transform: none;
+    color: var(--text-muted);
   }
 }

@@ -288,23 +288,87 @@
     }
   }
 
-  // Hamburger toggle
+  // Mobile drawer: open/close with focus management, scroll lock, and inert.
+  const navBackdrop = document.getElementById('nav-backdrop');
+  const mobileMQ = window.matchMedia('(max-width: 768px)');
+  let scrollLockY = 0;
+
+  function menuIsOpen() {
+    return navLinks.classList.contains('open');
+  }
+
+  // Remove drawer links from the tab order only when it's a *closed* mobile
+  // drawer; on desktop the same element is the visible horizontal nav.
+  function refreshInert() {
+    navLinks.inert = mobileMQ.matches && !menuIsOpen();
+  }
+
+  function openMenu() {
+    navLinks.classList.add('open');
+    hamburger.classList.add('active');
+    hamburger.setAttribute('aria-expanded', 'true');
+    if (navBackdrop) navBackdrop.classList.add('open');
+    navLinks.inert = false;
+    // iOS-safe scroll lock (overflow:hidden is not honored on iOS Safari)
+    scrollLockY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-' + scrollLockY + 'px';
+    document.body.style.width = '100%';
+    const first = navLinks.querySelector('a');
+    if (first) first.focus();
+  }
+
+  function releaseScrollLock() {
+    const y = scrollLockY;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    window.scrollTo(0, y);
+  }
+
+  function closeMenu(restoreFocus) {
+    if (!menuIsOpen()) return;
+    navLinks.classList.remove('open');
+    hamburger.classList.remove('active');
+    hamburger.setAttribute('aria-expanded', 'false');
+    if (navBackdrop) navBackdrop.classList.remove('open');
+    releaseScrollLock();
+    refreshInert();
+    if (restoreFocus) hamburger.focus();
+  }
+
   hamburger.addEventListener('click', () => {
-    const isOpen = navLinks.classList.toggle('open');
-    hamburger.classList.toggle('active');
-    hamburger.setAttribute('aria-expanded', isOpen);
-    document.body.style.overflow = isOpen ? 'hidden' : '';
+    if (menuIsOpen()) closeMenu(true);
+    else openMenu();
   });
 
-  // Close mobile menu on link click
+  // Close on link click
   navAnchors.forEach(link => {
-    link.addEventListener('click', () => {
-      navLinks.classList.remove('open');
-      hamburger.classList.remove('active');
-      hamburger.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-    });
+    link.addEventListener('click', () => closeMenu(false));
   });
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menuIsOpen()) closeMenu(true);
+  });
+
+  // Close on tap/click outside the drawer
+  document.addEventListener('click', (e) => {
+    if (!menuIsOpen()) return;
+    if (navLinks.contains(e.target) || hamburger.contains(e.target)) return;
+    closeMenu(false);
+  });
+
+  // Crossing the breakpoint (e.g. rotate to landscape at desktop width) must not
+  // leave a scroll-locked page with a hidden hamburger.
+  mobileMQ.addEventListener('change', () => {
+    if (!mobileMQ.matches && menuIsOpen()) {
+      closeMenu(false);
+    }
+    refreshInert();
+  });
+
+  refreshInert();
 
   // Active section highlighting
   const sections = document.querySelectorAll('section[id]');
