@@ -446,6 +446,23 @@ ul, ol {
   transform: translateX(-50%);
 }
 
+/* EEG trace caption — the authenticity cue that makes the motif read as data */
+.hero__trace-caption {
+  position: absolute;
+  left: 1.5rem;
+  bottom: 1.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  opacity: 0.75;
+  z-index: 1;
+}
+
+@media (max-width: 600px) {
+  .hero__trace-caption { display: none; }
+}
+
 .hero__scroll-line {
   width: 1px;
   height: 60px;

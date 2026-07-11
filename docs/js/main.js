@@ -1,6 +1,6 @@
 /* ============================================================
    Seungbeom Seo — Homepage Interactive Scripts
-   Neural particle system, cursor effects, scroll animations
+   EEG trace background, cursor effects, scroll animations
    ============================================================ */
 
 (function () {
@@ -10,15 +10,30 @@
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
 
-  // ── Particle System (Neural Network Background) ──────────────
+  // ── EEG Trace Background ─────────────────────────────────────
+  // A slow, clinical-style multi-channel EEG strip: the site is literally drawn
+  // in the applicant's own signal type. Traces are procedurally generated (a real
+  // recording can be dropped in later); occipital channels (O1/Oz) carry stronger
+  // alpha, echoing eyes-open visual-perception work.
   const canvas = document.getElementById('particle-canvas');
   const ctx = canvas.getContext('2d');
-  let particles = [];
   let mouse = { x: -1000, y: -1000 };
   let animFrame = null;
   let W = window.innerWidth;
   let H = window.innerHeight;
   let heroVisible = true;
+  let scroll = 0;
+
+  const CHANNELS = [
+    { label: 'Fp1', alpha: 6.1, theta: 3.0, beta: 19, aAmp: 0.35, bAmp: 0.20, phase: 0.0 },
+    { label: 'F3',  alpha: 6.4, theta: 3.3, beta: 21, aAmp: 0.42, bAmp: 0.18, phase: 0.8 },
+    { label: 'C3',  alpha: 6.7, theta: 2.7, beta: 18, aAmp: 0.48, bAmp: 0.16, phase: 1.7 },
+    { label: 'Cz',  alpha: 6.2, theta: 3.1, beta: 20, aAmp: 0.52, bAmp: 0.15, phase: 2.4 },
+    { label: 'P3',  alpha: 6.9, theta: 2.9, beta: 17, aAmp: 0.64, bAmp: 0.14, phase: 3.1 },
+    { label: 'Pz',  alpha: 6.5, theta: 3.2, beta: 19, aAmp: 0.72, bAmp: 0.13, phase: 3.9 },
+    { label: 'O1',  alpha: 6.8, theta: 2.8, beta: 16, aAmp: 0.98, bAmp: 0.12, phase: 4.6 },
+    { label: 'Oz',  alpha: 6.6, theta: 3.0, beta: 18, aAmp: 1.12, bAmp: 0.12, phase: 5.3 },
+  ];
 
   function resizeCanvas() {
     // Scale the backing store by devicePixelRatio (capped) so particles
@@ -33,163 +48,110 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  class Particle {
-    constructor() {
-      this.reset();
-    }
-
-    reset() {
-      this.x = Math.random() * W;
-      this.y = Math.random() * H;
-      this.size = Math.random() * 2 + 0.5;
-      this.speedX = (Math.random() - 0.5) * 0.4;
-      this.speedY = (Math.random() - 0.5) * 0.4;
-      this.opacity = Math.random() * 0.5 + 0.1;
-    }
-
-    update() {
-      this.x += this.speedX;
-      this.y += this.speedY;
-
-      // Mouse attraction
-      const dx = mouse.x - this.x;
-      const dy = mouse.y - this.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 200) {
-        const force = (200 - dist) / 200 * 0.015;
-        this.speedX += dx * force * 0.01;
-        this.speedY += dy * force * 0.01;
-      }
-
-      // Dampen speed
-      this.speedX *= 0.999;
-      this.speedY *= 0.999;
-
-      // Wrap around
-      if (this.x < -10) this.x = W + 10;
-      if (this.x > W + 10) this.x = -10;
-      if (this.y < -10) this.y = H + 10;
-      if (this.y > H + 10) this.y = -10;
-    }
-
-    draw() {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(59, 130, 246, ${this.opacity})`;
-      ctx.fill();
-    }
+  function eegValue(x, ch) {
+    const s = x * 0.013;
+    let v = 0;
+    v += Math.sin(s * ch.alpha + ch.phase) * ch.aAmp;        // dominant rhythm
+    v += Math.sin(s * ch.theta + ch.phase * 1.7) * 0.32;     // slower theta
+    v += Math.sin(s * ch.beta + ch.phase * 0.5) * ch.bAmp;   // fast beta
+    v += Math.sin(s * 1.6 + ch.phase * 3.1) * 0.28;          // slow drift
+    v += Math.sin(s * 41.3 + ch.phase) * 0.05;               // fine texture
+    const burst = 0.55 + 0.45 * Math.sin(s * 0.21 + ch.phase); // alpha waxing/waning
+    return v * burst;
   }
 
-  function initParticles() {
-    // Fewer particles on touch/low-power devices (coarse pointer).
-    const density = finePointer.matches ? 12000 : 22000;
-    const cap = finePointer.matches ? 120 : 55;
-    const count = Math.min(Math.floor((W * H) / density), cap);
-    particles = [];
-    for (let i = 0; i < count; i++) {
-      particles.push(new Particle());
-    }
-  }
-
-  function drawConnections() {
-    const maxDist = 150;
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < maxDist) {
-          const opacity = (1 - dist / maxDist) * 0.15;
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(59, 130, 246, ${opacity})`;
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-        }
-      }
-    }
-
-    // Draw connections to mouse (fine pointers only; mouse stays off-screen on touch)
-    for (let i = 0; i < particles.length; i++) {
-      const dx = mouse.x - particles[i].x;
-      const dy = mouse.y - particles[i].y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 200) {
-        const opacity = (1 - dist / 200) * 0.3;
-        ctx.beginPath();
-        ctx.moveTo(particles[i].x, particles[i].y);
-        ctx.lineTo(mouse.x, mouse.y);
-        ctx.strokeStyle = `rgba(96, 165, 250, ${opacity})`;
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
-      }
-    }
-  }
-
-  function renderStaticFrame() {
+  function drawEEG() {
     ctx.clearRect(0, 0, W, H);
-    particles.forEach(p => p.draw());
-    drawConnections();
+    const n = CHANNELS.length;
+    const topPad = Math.max(38, H * 0.06);
+    const rowH = (H - topPad * 2) / n;
+    const amp = rowH * 0.34;
+    const startX = 46;
+
+    // faint ~1-second grid, scrolling with the trace
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.045)';
+    ctx.lineWidth = 1;
+    const gridGap = 92;
+    for (let gx = -(scroll % gridGap); gx <= W; gx += gridGap) {
+      ctx.beginPath();
+      ctx.moveTo(gx, topPad * 0.5);
+      ctx.lineTo(gx, H - topPad * 0.5);
+      ctx.stroke();
+    }
+
+    ctx.font = "600 11px 'JetBrains Mono', monospace";
+    ctx.textBaseline = 'middle';
+
+    for (let i = 0; i < n; i++) {
+      const ch = CHANNELS[i];
+      const baseline = topPad + rowH * (i + 0.5);
+      const occ = ch.label.charAt(0) === 'O';
+      ctx.strokeStyle = occ ? 'rgba(96, 165, 250, 0.40)' : 'rgba(59, 130, 246, 0.20)';
+      ctx.lineWidth = occ ? 1.3 : 1;
+      ctx.beginPath();
+      for (let x = startX; x <= W; x += 2) {
+        const y = baseline - eegValue(x + scroll, ch) * amp;
+        if (x === startX) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = occ ? 'rgba(96, 165, 250, 0.55)' : 'rgba(136, 146, 164, 0.38)';
+      ctx.fillText(ch.label, 14, baseline);
+    }
+
+    // review-style time cursor at the mouse (fine pointers set mouse.x)
+    if (mouse.x > 0) {
+      ctx.strokeStyle = 'rgba(96, 165, 250, 0.14)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(mouse.x, topPad * 0.5);
+      ctx.lineTo(mouse.x, H - topPad * 0.5);
+      ctx.stroke();
+    }
   }
 
-  function animateParticles() {
+  function animate() {
     if (!heroVisible || prefersReduced.matches) {
       animFrame = null;
       return;
     }
-    ctx.clearRect(0, 0, W, H);
-    particles.forEach(p => {
-      p.update();
-      p.draw();
-    });
-    drawConnections();
-    animFrame = requestAnimationFrame(animateParticles);
+    scroll += 0.5;
+    drawEEG();
+    animFrame = requestAnimationFrame(animate);
   }
 
-  function startParticles() {
+  function startEEG() {
     if (animFrame == null && heroVisible && !prefersReduced.matches) {
-      animFrame = requestAnimationFrame(animateParticles);
+      animFrame = requestAnimationFrame(animate);
     }
   }
 
   resizeCanvas();
-  initParticles();
-  if (prefersReduced.matches) {
-    renderStaticFrame();
-  } else {
-    startParticles();
-  }
+  drawEEG();
+  if (!prefersReduced.matches) startEEG();
 
-  // Pause the loop and fade the canvas out once the hero scrolls away, so the
-  // field never animates behind body text and costs nothing off-screen.
+  // Fade the canvas out and pause once the hero scrolls away — the trace never
+  // sits behind body text and costs nothing off-screen.
   const heroSection = document.getElementById('hero');
   if (heroSection && 'IntersectionObserver' in window) {
     const heroObserver = new IntersectionObserver((entries) => {
       heroVisible = entries[0].isIntersecting;
       canvas.style.opacity = heroVisible ? '1' : '0';
       if (heroVisible) {
-        if (prefersReduced.matches) renderStaticFrame();
-        else startParticles();
+        if (prefersReduced.matches) drawEEG();
+        else startEEG();
       }
     }, { threshold: 0 });
     heroObserver.observe(heroSection);
   }
 
   let resizeTimer;
-  let lastWidth = window.innerWidth;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      const w = window.innerWidth;
       resizeCanvas();
-      // Only re-seed particles when the width changes — height-only changes are
-      // usually the mobile URL bar collapsing and shouldn't teleport the field.
-      if (w !== lastWidth) {
-        initParticles();
-        lastWidth = w;
-      }
-      if (prefersReduced.matches) renderStaticFrame();
+      drawEEG();
     }, 200);
   });
 
@@ -197,9 +159,9 @@
   prefersReduced.addEventListener('change', () => {
     if (prefersReduced.matches) {
       if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
-      renderStaticFrame();
+      drawEEG();
     } else {
-      startParticles();
+      startEEG();
     }
   });
 
