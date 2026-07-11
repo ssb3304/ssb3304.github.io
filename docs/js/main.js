@@ -6,16 +6,31 @@
 (function () {
   'use strict';
 
+  // ── Capability / preference queries ──────────────────────────
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+
   // ── Particle System (Neural Network Background) ──────────────
   const canvas = document.getElementById('particle-canvas');
   const ctx = canvas.getContext('2d');
   let particles = [];
   let mouse = { x: -1000, y: -1000 };
-  let animFrame;
+  let animFrame = null;
+  let W = window.innerWidth;
+  let H = window.innerHeight;
+  let heroVisible = true;
 
   function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // Scale the backing store by devicePixelRatio (capped) so particles
+    // render crisply on HiDPI/Retina screens; draw in CSS-pixel coordinates.
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.floor(W * dpr);
+    canvas.height = Math.floor(H * dpr);
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
   class Particle {
@@ -24,8 +39,8 @@
     }
 
     reset() {
-      this.x = Math.random() * canvas.width;
-      this.y = Math.random() * canvas.height;
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
       this.size = Math.random() * 2 + 0.5;
       this.speedX = (Math.random() - 0.5) * 0.4;
       this.speedY = (Math.random() - 0.5) * 0.4;
@@ -51,10 +66,10 @@
       this.speedY *= 0.999;
 
       // Wrap around
-      if (this.x < -10) this.x = canvas.width + 10;
-      if (this.x > canvas.width + 10) this.x = -10;
-      if (this.y < -10) this.y = canvas.height + 10;
-      if (this.y > canvas.height + 10) this.y = -10;
+      if (this.x < -10) this.x = W + 10;
+      if (this.x > W + 10) this.x = -10;
+      if (this.y < -10) this.y = H + 10;
+      if (this.y > H + 10) this.y = -10;
     }
 
     draw() {
@@ -66,7 +81,10 @@
   }
 
   function initParticles() {
-    const count = Math.min(Math.floor((canvas.width * canvas.height) / 12000), 120);
+    // Fewer particles on touch/low-power devices (coarse pointer).
+    const density = finePointer.matches ? 12000 : 22000;
+    const cap = finePointer.matches ? 120 : 55;
+    const count = Math.min(Math.floor((W * H) / density), cap);
     particles = [];
     for (let i = 0; i < count; i++) {
       particles.push(new Particle());
@@ -92,7 +110,7 @@
       }
     }
 
-    // Draw connections to mouse
+    // Draw connections to mouse (fine pointers only; mouse stays off-screen on touch)
     for (let i = 0; i < particles.length; i++) {
       const dx = mouse.x - particles[i].x;
       const dy = mouse.y - particles[i].y;
@@ -109,8 +127,18 @@
     }
   }
 
+  function renderStaticFrame() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => p.draw());
+    drawConnections();
+  }
+
   function animateParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!heroVisible || prefersReduced.matches) {
+      animFrame = null;
+      return;
+    }
+    ctx.clearRect(0, 0, W, H);
     particles.forEach(p => {
       p.update();
       p.draw();
@@ -119,54 +147,121 @@
     animFrame = requestAnimationFrame(animateParticles);
   }
 
+  function startParticles() {
+    if (animFrame == null && heroVisible && !prefersReduced.matches) {
+      animFrame = requestAnimationFrame(animateParticles);
+    }
+  }
+
   resizeCanvas();
   initParticles();
-  animateParticles();
+  if (prefersReduced.matches) {
+    renderStaticFrame();
+  } else {
+    startParticles();
+  }
+
+  // Pause the loop and fade the canvas out once the hero scrolls away, so the
+  // field never animates behind body text and costs nothing off-screen.
+  const heroSection = document.getElementById('hero');
+  if (heroSection && 'IntersectionObserver' in window) {
+    const heroObserver = new IntersectionObserver((entries) => {
+      heroVisible = entries[0].isIntersecting;
+      canvas.style.opacity = heroVisible ? '1' : '0';
+      if (heroVisible) {
+        if (prefersReduced.matches) renderStaticFrame();
+        else startParticles();
+      }
+    }, { threshold: 0 });
+    heroObserver.observe(heroSection);
+  }
 
   let resizeTimer;
+  let lastWidth = window.innerWidth;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
+      const w = window.innerWidth;
       resizeCanvas();
-      initParticles();
+      // Only re-seed particles when the width changes — height-only changes are
+      // usually the mobile URL bar collapsing and shouldn't teleport the field.
+      if (w !== lastWidth) {
+        initParticles();
+        lastWidth = w;
+      }
+      if (prefersReduced.matches) renderStaticFrame();
     }, 200);
   });
 
+  // React to a live OS reduced-motion toggle.
+  prefersReduced.addEventListener('change', () => {
+    if (prefersReduced.matches) {
+      if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+      renderStaticFrame();
+    } else {
+      startParticles();
+    }
+  });
+
   // ── Cursor Glow ──────────────────────────────────────────────
+  // Fine-pointer only: on touch, synthetic hover events would otherwise leave a
+  // frozen 600px blob and swarm the particles toward the last tap point.
   const cursorGlow = document.querySelector('.cursor-glow');
 
-  document.addEventListener('mousemove', (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
+  if (finePointer.matches) {
+    let glowShown = false;
+    let glowPending = false;
+    let gx = 0;
+    let gy = 0;
 
-    cursorGlow.style.left = e.clientX + 'px';
-    cursorGlow.style.top = e.clientY + 'px';
-  });
+    document.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      gx = e.clientX;
+      gy = e.clientY;
+      if (!glowPending) {
+        glowPending = true;
+        requestAnimationFrame(() => {
+          cursorGlow.style.left = gx + 'px';
+          cursorGlow.style.top = gy + 'px';
+          if (!glowShown) {
+            cursorGlow.style.opacity = '1';
+            glowShown = true;
+          }
+          glowPending = false;
+        });
+      }
+    });
 
-  document.addEventListener('mouseleave', () => {
-    mouse.x = -1000;
-    mouse.y = -1000;
-  });
+    document.addEventListener('mouseleave', () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    });
+  }
 
   // ── Magnetic Hover Effect ────────────────────────────────────
-  const magneticElements = document.querySelectorAll('.magnetic');
+  // Fine-pointer only. Applied to small targets (contact pills), not reading
+  // surfaces — a tap on touch would otherwise leave elements stuck offset.
+  if (finePointer.matches) {
+    const magneticElements = document.querySelectorAll('.magnetic');
 
-  magneticElements.forEach(el => {
-    el.addEventListener('mousemove', (e) => {
-      const rect = el.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      el.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px)`;
-    });
+    magneticElements.forEach(el => {
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        el.style.transform = `translate(${x * 0.14}px, ${y * 0.14}px)`;
+      });
 
-    el.addEventListener('mouseleave', () => {
-      el.style.transform = 'translate(0, 0)';
-      el.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
-      setTimeout(() => {
-        el.style.transition = '';
-      }, 400);
+      const release = () => {
+        el.style.transform = 'translate(0, 0)';
+        el.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+        setTimeout(() => { el.style.transition = ''; }, 400);
+      };
+      el.addEventListener('mouseleave', release);
+      el.addEventListener('pointercancel', release);
     });
-  });
+  }
 
   // ── Scroll Progress Bar ──────────────────────────────────────
   const scrollProgress = document.querySelector('.scroll-progress');
@@ -229,6 +324,24 @@
     });
   }
 
+  // ── Back to Top ──────────────────────────────────────────────
+  const backToTop = document.getElementById('back-to-top');
+
+  function updateBackToTop() {
+    if (!backToTop) return;
+    if (window.scrollY > window.innerHeight * 1.5) {
+      backToTop.classList.add('visible');
+    } else {
+      backToTop.classList.remove('visible');
+    }
+  }
+
+  if (backToTop) {
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: prefersReduced.matches ? 'auto' : 'smooth' });
+    });
+  }
+
   // ── Scroll Reveal ────────────────────────────────────────────
   const revealElements = document.querySelectorAll('.reveal');
 
@@ -255,6 +368,7 @@
         updateScrollProgress();
         updateNavState();
         updateActiveSection();
+        updateBackToTop();
         ticking = false;
       });
       ticking = true;
@@ -265,57 +379,30 @@
   updateScrollProgress();
   updateNavState();
   updateActiveSection();
+  updateBackToTop();
 
-  // ── Hero Text Animation ──────────────────────────────────────
-  // Animate hero elements on load with stagger
-  window.addEventListener('load', () => {
+  // ── Hero Entrance ────────────────────────────────────────────
+  // Runs immediately (script is at end of <body>), NOT on window 'load', so the
+  // hero doesn't wait for fonts + the profile image on slow connections.
+  function revealHero(instant) {
     const heroReveals = document.querySelectorAll('.hero .reveal');
     heroReveals.forEach((el, i) => {
-      setTimeout(() => {
+      if (instant) {
         el.classList.add('visible');
-      }, 300 + i * 150);
-    });
-  });
-
-  // ── Typing Effect for Subtitle ───────────────────────────────
-  const subtitle = document.querySelector('.hero__subtitle');
-  if (subtitle) {
-    const text = subtitle.textContent;
-    subtitle.textContent = '';
-    subtitle.style.borderRight = '2px solid var(--accent-bright)';
-    subtitle.style.display = 'inline-block';
-
-    let charIndex = 0;
-    function typeChar() {
-      if (charIndex < text.length) {
-        subtitle.textContent += text[charIndex];
-        charIndex++;
-        setTimeout(typeChar, 50 + Math.random() * 30);
       } else {
-        // Blink cursor then remove
-        setTimeout(() => {
-          subtitle.style.borderRight = 'none';
-        }, 2000);
+        setTimeout(() => el.classList.add('visible'), 200 + i * 140);
       }
-    }
-
-    // Start typing after hero reveals begin
-    setTimeout(typeChar, 1200);
+    });
   }
 
-  // ── Image Protection ─────────────────────────────────────────
-  // Blocks right-click and drag on <img> elements. Screenshots and
-  // devtools-based extraction are NOT blocked (browser limitation).
-  document.addEventListener('contextmenu', (e) => {
-    if (e.target.tagName === 'IMG') {
-      e.preventDefault();
-    }
-  });
+  let heroSeen = false;
+  try { heroSeen = !!sessionStorage.getItem('heroSeen'); } catch (e) { /* private mode */ }
 
-  document.addEventListener('dragstart', (e) => {
-    if (e.target.tagName === 'IMG') {
-      e.preventDefault();
-    }
-  });
+  if (prefersReduced.matches || heroSeen) {
+    revealHero(true);
+  } else {
+    revealHero(false);
+    try { sessionStorage.setItem('heroSeen', '1'); } catch (e) { /* ignore */ }
+  }
 
 })();
