@@ -480,6 +480,9 @@ ul, ol {
   position: relative;
   z-index: 1;
   padding: var(--section-pad) 0;
+  /* Opaque so the fixed EEG canvas only shows behind the hero, never behind
+     body text (same color as the page, so the look is unchanged). */
+  background: var(--bg-primary);
 }
 
 .section--alt {
