@@ -1475,3 +1475,89 @@ ul, ol {
     color: var(--text-muted);
   }
 }
+
+/* ============================================================
+   Print — PIs do circulate applicant materials on paper
+   ============================================================ */
+@media print {
+  :root { color-scheme: light; }
+
+  body {
+    background: #fff !important;
+    color: #111 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Drop the animated / fixed / decorative chrome */
+  #particle-canvas,
+  .cursor-glow,
+  .scroll-progress,
+  .nav,
+  .nav__backdrop,
+  .skip-link,
+  .back-to-top,
+  .hero__scroll-indicator,
+  .hero__cta,
+  .research__card-icon,
+  .conf-card__gallery,
+  .personal__stack,
+  .personal__note,
+  .conferences__note {
+    display: none !important;
+  }
+
+  main,
+  .section,
+  .section--alt,
+  .footer {
+    background: #fff !important;
+    padding: 0.75rem 0 !important;
+  }
+
+  .reveal,
+  .js .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .hero {
+    min-height: auto !important;
+    padding: 0.5rem 0 1rem !important;
+  }
+
+  h1, h2, h3, h4, p, li,
+  .section__title, .about__lead, .about__text,
+  .hero__name, .hero__subtitle, .tag,
+  .about__lead strong, .about__lead em, .about__text strong,
+  .timeline__org, .pub__authors strong {
+    color: #111 !important;
+  }
+
+  .section__number,
+  .pub__venue, .timeline__range, .pub__authors, .footer {
+    color: #555 !important;
+  }
+
+  a { color: #111 !important; text-decoration: underline; }
+
+  .tag { border-color: #bbb !important; background: none !important; }
+
+  .research__card, .conf-card, .pub__item, .timeline__item {
+    break-inside: avoid;
+    border-color: #ccc !important;
+    box-shadow: none !important;
+    background: #fff !important;
+  }
+
+  /* Keep publication links usable on paper */
+  .pub__item::after {
+    content: attr(href);
+    display: block;
+    grid-column: 1 / -1;
+    margin-top: 0.25rem;
+    font-size: 0.72rem;
+    color: #555;
+    word-break: break-all;
+  }
+}
