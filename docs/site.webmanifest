@@ -1,0 +1,14 @@
+{
+  "name": "Seungbeom Seo — Neuroscience & BCI Researcher",
+  "short_name": "S. Seo",
+  "description": "M.S. student in Biomedical Engineering at UNIST, researching EEG-based brain–computer interfaces.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0e17",
+  "theme_color": "#0a0e17",
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any" },
+    { "src": "/favicon-32.png", "type": "image/png", "sizes": "32x32" },
+    { "src": "/apple-touch-icon.png", "type": "image/png", "sizes": "180x180" }
+  ]
+}

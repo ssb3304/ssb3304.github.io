@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Signal Lost · Seungbeom Seo</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0a0e17">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <style>
+    :root { color-scheme: dark; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0e17;
+      color: #e2e8f0;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      overflow: hidden;
+    }
+    .wrap { max-width: 480px; }
+    .code {
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+      font-size: clamp(3.5rem, 14vw, 6rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      background: linear-gradient(135deg, #60a5fa, #3b82f6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    svg.trace { width: 100%; max-width: 360px; height: 56px; margin: 1.5rem auto 0.5rem; display: block; }
+    .trace path { fill: none; stroke: #3b82f6; stroke-width: 1.5; opacity: 0.6; }
+    h1 { font-size: 1.15rem; font-weight: 600; margin-top: 1rem; }
+    p { color: #8892a4; margin-top: 0.5rem; line-height: 1.7; font-size: 0.95rem; }
+    a.home {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+      padding: 0.75rem 1.75rem;
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 999px;
+      background: rgba(59,130,246,0.08);
+      color: #60a5fa;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+    a.home:hover { background: rgba(59,130,246,0.16); border-color: #3b82f6; color: #fff; transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="code">404</div>
+    <svg class="trace" viewBox="0 0 360 56" aria-hidden="true">
+      <path d="M0,28 L60,28 L70,28 L78,10 L86,46 L94,28 L120,28 L160,28 L168,28 L176,20 L184,36 L192,28 L360,28"/>
+    </svg>
+    <h1>Signal lost</h1>
+    <p>This page couldn&rsquo;t be decoded &mdash; the link may be broken or the page may have moved.</p>
+    <a class="home" href="/">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Back to home</span>
+    </a>
+  </div>
+</body>
+</html>
