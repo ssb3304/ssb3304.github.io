@@ -285,7 +285,9 @@
     document.body.style.position = '';
     document.body.style.top = '';
     document.body.style.width = '';
-    window.scrollTo(0, y);
+    // Instant, not smooth — html{scroll-behavior:smooth} would otherwise animate
+    // a jump-to-top-then-back when the drawer closes.
+    window.scrollTo({ top: y, left: 0, behavior: 'instant' });
   }
 
   function closeMenu(restoreFocus) {
@@ -369,21 +371,30 @@
   }
 
   // ── Scroll Reveal ────────────────────────────────────────────
-  const revealElements = document.querySelectorAll('.reveal');
+  // Hero reveals are choreographed by revealHero(); exclude them here so the
+  // generic observer doesn't fire first and cancel the stagger.
+  const revealElements = Array.prototype.filter.call(
+    document.querySelectorAll('.reveal'),
+    (el) => !el.closest('.hero')
+  );
 
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
-      }
+  if ('IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.15,
+      rootMargin: '0px 0px -50px 0px'
     });
-  }, {
-    threshold: 0.15,
-    rootMargin: '0px 0px -50px 0px'
-  });
-
-  revealElements.forEach(el => revealObserver.observe(el));
+    revealElements.forEach(el => revealObserver.observe(el));
+  } else {
+    // No IntersectionObserver support: reveal everything so nothing stays hidden.
+    revealElements.forEach(el => el.classList.add('visible'));
+  }
 
   // ── Unified Scroll Handler ───────────────────────────────────
   let ticking = false;
