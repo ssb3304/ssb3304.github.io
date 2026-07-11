@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Set .js early so reveal-hidden state applies only when JS can restore it -->
+  <script>document.documentElement.classList.add('js');</script>
   <title>Seungbeom Seo — Neuroscience &amp; BCI Researcher</title>
   <meta name="description" content="Seungbeom Seo — M.S. student in Biomedical Engineering at UNIST, researching EEG-based brain–computer interfaces, neural decoding, and the cognitive neuroscience of visual perception.">
   <link rel="canonical" href="https://ssb3304.github.io/">
@@ -65,6 +67,8 @@
   </script>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
   <!-- Cursor glow -->
   <div class="cursor-glow" aria-hidden="true"></div>
 
@@ -78,7 +82,7 @@
   <nav class="nav" id="nav">
     <div class="nav__inner">
       <a href="#hero" class="nav__logo">S<span class="accent">.</span>Seo</a>
-      <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu" aria-controls="nav-links" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
       <ul class="nav__links" id="nav-links">
@@ -92,6 +96,8 @@
       </ul>
     </div>
   </nav>
+
+  <main id="main" tabindex="-1">
 
   <!-- Hero -->
   <section class="hero" id="hero">
@@ -123,7 +129,7 @@
   <section class="section" id="about">
     <div class="container">
       <h2 class="section__title reveal">
-        <span class="section__number">01.</span> About
+        <span class="section__number" aria-hidden="true">01.</span> About
       </h2>
       <div class="about__grid">
         <div class="about__photo reveal">
@@ -164,7 +170,7 @@
   <section class="section section--alt" id="research">
     <div class="container">
       <h2 class="section__title reveal">
-        <span class="section__number">02.</span> Research
+        <span class="section__number" aria-hidden="true">02.</span> Research
       </h2>
       <p class="section__intro reveal">My research lies at the intersection of neuroscience and engineering, focusing on understanding and interfacing with the human brain.</p>
       <div class="research__grid">
@@ -204,7 +210,7 @@
   <section class="section" id="publications">
     <div class="container">
       <h2 class="section__title reveal">
-        <span class="section__number">03.</span> Publications
+        <span class="section__number" aria-hidden="true">03.</span> Publications
       </h2>
       <ol class="pub__list">
         <li class="reveal">
@@ -280,7 +286,7 @@
   <section class="section section--alt" id="experience">
     <div class="container">
       <h2 class="section__title reveal">
-        <span class="section__number">04.</span> Experience
+        <span class="section__number" aria-hidden="true">04.</span> Experience
       </h2>
       <div class="timeline">
         <!-- Education -->
@@ -352,7 +358,7 @@
   <section class="section section--alt" id="conferences">
     <div class="container">
       <h2 class="section__title reveal">
-        <span class="section__number">05.</span> Conferences
+        <span class="section__number" aria-hidden="true">05.</span> Conferences
       </h2>
       <p class="section__intro reveal">Where the work meets the world &mdash; and the world meets back. Each stop mixes academic moments with the cities they took me to.</p>
       <div class="conferences__grid">
@@ -429,7 +435,7 @@
   <section class="section" id="personal">
     <div class="container">
       <h2 class="section__title reveal">
-        <span class="section__number">06.</span> Personal
+        <span class="section__number" aria-hidden="true">06.</span> Personal
       </h2>
       <p class="section__intro reveal">A glimpse beyond the lab &mdash; places I've wandered, plates I've cleaned, moments worth keeping.</p>
       <div class="personal__stack reveal" aria-label="Personal photo collage (placeholder)">
@@ -481,7 +487,7 @@
   <section class="section section--alt" id="contact">
     <div class="container">
       <h2 class="section__title reveal">
-        <span class="section__number">07.</span> Contact
+        <span class="section__number" aria-hidden="true">07.</span> Contact
       </h2>
       <p class="contact__intro reveal">Interested in collaborating or have questions about my research? I'd love to hear from you.</p>
       <div class="contact__links reveal">
@@ -504,6 +510,8 @@
       </div>
     </div>
   </section>
+
+  </main>
 
   <!-- Footer -->
   <footer class="footer">
