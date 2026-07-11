@@ -18,7 +18,6 @@
   let animFrame = null;
   let W = window.innerWidth;
   let H = window.innerHeight;
-  let heroVisible = true;
 
   function resizeCanvas() {
     // Scale the backing store by devicePixelRatio (capped) so particles
@@ -134,7 +133,7 @@
   }
 
   function animateParticles() {
-    if (!heroVisible || prefersReduced.matches) {
+    if (prefersReduced.matches) {
       animFrame = null;
       return;
     }
@@ -148,7 +147,7 @@
   }
 
   function startParticles() {
-    if (animFrame == null && heroVisible && !prefersReduced.matches) {
+    if (animFrame == null && !prefersReduced.matches) {
       animFrame = requestAnimationFrame(animateParticles);
     }
   }
@@ -161,20 +160,15 @@
     startParticles();
   }
 
-  // Pause the loop and fade the canvas out once the hero scrolls away, so the
-  // field never animates behind body text and costs nothing off-screen.
-  const heroSection = document.getElementById('hero');
-  if (heroSection && 'IntersectionObserver' in window) {
-    const heroObserver = new IntersectionObserver((entries) => {
-      heroVisible = entries[0].isIntersecting;
-      canvas.style.opacity = heroVisible ? '1' : '0';
-      if (heroVisible) {
-        if (prefersReduced.matches) renderStaticFrame();
-        else startParticles();
-      }
-    }, { threshold: 0 });
-    heroObserver.observe(heroSection);
-  }
+  // The field spans the whole page (behind the transparent sections). Pause only
+  // while the tab is hidden — saves battery with no visible change.
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+    } else if (!prefersReduced.matches) {
+      startParticles();
+    }
+  });
 
   let resizeTimer;
   let lastWidth = window.innerWidth;
@@ -455,6 +449,36 @@
   updateNavState();
   updateActiveSection();
   updateBackToTop();
+
+  // ── Typing Effect (hero subtitle) ────────────────────────────
+  // Types the research thesis out character by character. Set up before the hero
+  // entrance so the subtitle is already cleared when it fades in (no flash of the
+  // full line). Skipped under reduced-motion; the full sentence stays in the
+  // accessibility tree via aria-label and the box height is reserved so nothing
+  // below it jumps.
+  const subtitle = document.querySelector('.hero__subtitle');
+  if (subtitle && !prefersReduced.matches) {
+    const fullText = subtitle.textContent.trim();
+    subtitle.setAttribute('aria-label', fullText);
+    subtitle.style.minHeight = subtitle.offsetHeight + 'px';
+    const typedSpan = document.createElement('span');
+    typedSpan.setAttribute('aria-hidden', 'true');
+    subtitle.textContent = '';
+    subtitle.appendChild(typedSpan);
+    subtitle.classList.add('typing');
+
+    setTimeout(function () {
+      let i = 0;
+      (function step() {
+        if (i < fullText.length) {
+          typedSpan.textContent += fullText.charAt(i++);
+          setTimeout(step, 34 + Math.random() * 26);
+        } else {
+          setTimeout(() => subtitle.classList.remove('typing'), 1600);
+        }
+      })();
+    }, 700);
+  }
 
   // ── Hero Entrance ────────────────────────────────────────────
   // Runs immediately (script is at end of <body>), NOT on window 'load', so the
