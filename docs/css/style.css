@@ -28,6 +28,9 @@
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  /* Scholarly display serif — evokes the printed journal page, sheds the
+     stock developer-portfolio look. Used for the hero name and section titles. */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
 
   /* Spacing */
   --section-pad: clamp(4rem, 10vh, 7rem);
@@ -290,19 +293,12 @@ ul, ol {
   max-width: 700px;
 }
 
-.hero__greeting {
-  font-family: var(--font-mono);
-  font-size: 1rem;
-  color: var(--accent-bright);
-  margin-bottom: 0.75rem;
-  letter-spacing: 0.05em;
-}
-
 .hero__name {
-  font-size: clamp(2.8rem, 8vw, 5.5rem);
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8.5vw, 6rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.015em;
   margin-bottom: 1.25rem;
 }
 
@@ -484,10 +480,11 @@ ul, ol {
 }
 
 .section__title {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 4vw, 2.7rem);
+  font-weight: 600;
   margin-bottom: 2.5rem;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .section__number {
