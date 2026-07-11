@@ -28,9 +28,6 @@
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  /* Scholarly display serif — evokes the printed journal page, sheds the
-     stock developer-portfolio look. Used for the hero name and section titles. */
-  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
 
   /* Spacing */
   --section-pad: clamp(4rem, 10vh, 7rem);
@@ -293,12 +290,19 @@ ul, ol {
   max-width: 700px;
 }
 
+.hero__greeting {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--accent-bright);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
 .hero__name {
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 8.5vw, 6rem);
-  font-weight: 600;
-  line-height: 1.02;
-  letter-spacing: -0.015em;
+  font-size: clamp(2.8rem, 8vw, 5.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
   margin-bottom: 1.25rem;
 }
 
@@ -446,23 +450,6 @@ ul, ol {
   transform: translateX(-50%);
 }
 
-/* EEG trace caption — the authenticity cue that makes the motif read as data */
-.hero__trace-caption {
-  position: absolute;
-  left: 1.5rem;
-  bottom: 1.75rem;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  letter-spacing: 0.06em;
-  opacity: 0.75;
-  z-index: 1;
-}
-
-@media (max-width: 600px) {
-  .hero__trace-caption { display: none; }
-}
-
 .hero__scroll-line {
   width: 1px;
   height: 60px;
@@ -500,11 +487,10 @@ ul, ol {
 }
 
 .section__title {
-  font-family: var(--font-display);
-  font-size: clamp(1.9rem, 4vw, 2.7rem);
-  font-weight: 600;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
   margin-bottom: 2.5rem;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .section__number {
