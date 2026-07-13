@@ -7,7 +7,10 @@
   'use strict';
 
   // ── Capability / preference queries ──────────────────────────
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  // prefers-reduced-motion is intentionally ignored (owner's request): animations
+  // always play. Stubbed to always-false so every motion gate below stays on.
+  // To restore accessible behavior, use: window.matchMedia('(prefers-reduced-motion: reduce)').
+  const prefersReduced = { matches: false, addEventListener: function () {} };
   const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
 
   // ── Particle System (Neural Network Background) ──────────────

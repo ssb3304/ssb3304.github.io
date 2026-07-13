@@ -1566,25 +1566,10 @@ ul, ol {
   background: var(--accent-subtle);
 }
 
-/* Respect users who ask the OS to reduce motion */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-
-  html { scroll-behavior: auto; }
-
-  .reveal,
-  .js .reveal {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-}
+/* NOTE: prefers-reduced-motion handling intentionally removed by the owner's
+   request — animations play for everyone regardless of the OS setting. (To
+   restore accessible behavior, re-add a @media (prefers-reduced-motion: reduce)
+   block here and the matchMedia gate in main.js.) */
 
 /* ============================================================
    Touch fallbacks — no usable :hover on touch devices
