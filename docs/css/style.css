@@ -487,7 +487,11 @@ ul, ol {
 }
 
 .section--alt {
-  background: var(--bg-secondary);
+  /* Transparent so the particle field shows through on EVERY section
+     (owner's request — uniform animated background across the whole page).
+     Cards, timeline nodes, and publication items keep their own opaque
+     backgrounds for readable structure. */
+  background: transparent;
 }
 
 .container {
@@ -739,8 +743,7 @@ ul, ol {
   margin-top: 0.55rem;
 }
 
-.pub__type,
-.pub__badge {
+.pub__type {
   font-family: var(--font-mono);
   font-size: 0.66rem;
   letter-spacing: 0.05em;
@@ -755,22 +758,11 @@ ul, ol {
   border: 1px solid var(--border);
 }
 
-.pub__badge {
-  color: var(--accent-bright);
-  background: var(--accent-subtle);
-  border: 1px solid var(--border-hover);
-}
-
 .pub__footnote {
   margin-top: 1.75rem;
   font-size: 0.82rem;
   color: var(--text-muted);
   line-height: 1.7;
-}
-
-.pub__footnote-star {
-  color: var(--accent-bright);
-  font-weight: 600;
 }
 
 .pub__footnote a {
@@ -950,7 +942,7 @@ ul, ol {
   font-size: 0.8rem;
   color: var(--text-muted);
   border-top: 1px solid var(--border);
-  background: var(--bg-primary);
+  /* No opaque background — particle field continues through the footer too. */
 }
 
 /* --- Reveal Animations --- */
