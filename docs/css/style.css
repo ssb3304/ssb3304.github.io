@@ -7,14 +7,15 @@
 :root {
   /* Colors */
   --bg-primary: #0a0e17;
-  --bg-secondary: #0f1420;
   --bg-card: #131926;
   --bg-card-hover: #1a2235;
 
   --text-primary: #e2e8f0;
   --text-secondary: #8892a4;
-  /* Raised from #4a5568 (~2.4:1, fails WCAG AA) to pass 4.5:1 on all three
-     backgrounds while staying a step dimmer than --text-secondary. */
+  /* Raised from #4a5568 (~2.4:1, fails WCAG AA) to pass 4.5:1 on --bg-primary
+     and --bg-card while staying a step dimmer than --text-secondary. On the
+     lighter --bg-card-hover it lands at ~4.47:1, so hover states swap muted
+     text to --text-secondary where needed (see .conf-card:hover). */
   --text-muted: #7a89a0;
 
   --accent: #3b82f6;
@@ -184,6 +185,10 @@ ul, ol {
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.02em;
+  /* 44px minimum tap target (matches .nav__links a) */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .nav__logo:hover {
@@ -308,30 +313,6 @@ ul, ol {
 
 .hero__name-line {
   display: block;
-}
-
-.hero__tagline {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.25rem;
-}
-
-.tag {
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  padding: 0.3rem 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--accent-subtle);
-}
-
-.tag-sep {
-  color: var(--text-muted);
-  font-size: 1.25rem;
 }
 
 .hero__subtitle {
@@ -465,6 +446,16 @@ ul, ol {
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* On short viewports (landscape phones, small screens) the centered hero
+   content reaches the indicator's zone — hide it rather than let the pulsing
+   line strike through the CTA buttons. */
+@media (max-height: 640px) {
+  .hero__scroll-indicator {
+    display: none;
+  }
 }
 
 .hero__scroll-line {
@@ -498,10 +489,6 @@ ul, ol {
   max-width: var(--container-max);
   margin: 0 auto;
   padding: 0 1.5rem;
-}
-
-.container--narrow {
-  max-width: var(--container-narrow);
 }
 
 .section__title {
@@ -751,9 +738,6 @@ ul, ol {
   padding: 0.18rem 0.6rem;
   border-radius: 999px;
   line-height: 1.4;
-}
-
-.pub__type {
   color: var(--text-muted);
   border: 1px solid var(--border);
 }
@@ -881,15 +865,6 @@ ul, ol {
 }
 
 /* --- Personal Placeholder --- */
-.personal__placeholder {
-  text-align: center;
-  padding: 4rem 2rem;
-  border: 1px dashed var(--border);
-  border-radius: 12px;
-  color: var(--text-muted);
-  font-size: 1rem;
-}
-
 /* --- Contact --- */
 .contact__intro {
   text-align: center;
@@ -1041,17 +1016,20 @@ ul, ol {
     --section-pad: 3rem;
   }
 
-  .hero__tagline {
-    gap: 0.4rem;
+  /* The status pill needs ~370px at full size, so it wraps on phones —
+     make the wrapped state look designed: smaller type, softer radius. */
+  .hero__status {
+    font-size: 0.7rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 16px;
+    line-height: 1.5;
   }
 
-  .tag {
-    font-size: 0.75rem;
-    padding: 0.2rem 0.6rem;
-  }
-
-  .tag-sep {
-    display: none;
+  /* Keep the fixed back-to-top button (bottom-right, 44px) clear of the
+     centered footer line. */
+  .footer {
+    padding-left: 4.5rem;
+    padding-right: 4.5rem;
   }
 
   .timeline {
@@ -1376,6 +1354,12 @@ ul, ol {
   color: var(--text-muted);
 }
 
+/* --text-muted is ~4.47:1 on --bg-card-hover (just under WCAG AA) — bump the
+   date to --text-secondary while the card background lightens on hover. */
+.conf-card:hover .conf-card__date {
+  color: var(--text-secondary);
+}
+
 .conf-card__name {
   font-size: 1.05rem;
   font-weight: 600;
@@ -1527,11 +1511,13 @@ ul, ol {
   outline-offset: 2px;
 }
 
-/* Visible focus ring for keyboard users (not shown for mouse clicks) */
+/* Visible focus ring for keyboard users (not shown for mouse clicks).
+   No border-radius here: it would override each component's own radius
+   (999px pills, the round back-to-top) on focus — outlines already follow
+   the element's border-radius in modern browsers. */
 :focus-visible {
   outline: 2px solid var(--accent-bright);
   outline-offset: 3px;
-  border-radius: 4px;
 }
 
 /* The <main> receives programmatic focus from the skip link — no visible ring */
@@ -1659,20 +1645,19 @@ ul, ol {
 
   h1, h2, h3, h4, p, li,
   .section__title, .about__lead, .about__text,
-  .hero__name, .hero__subtitle, .tag,
+  .hero__name, .hero__subtitle,
   .about__lead strong, .about__lead em, .about__text strong,
   .timeline__org, .pub__authors strong {
     color: #111 !important;
   }
 
   .section__number,
-  .pub__venue, .timeline__range, .pub__authors, .footer {
+  .pub__venue, .timeline__range, .pub__authors, .footer,
+  .pub__year, .pub__type, .conf-card__date, .hero__status {
     color: #555 !important;
   }
 
   a { color: #111 !important; text-decoration: underline; }
-
-  .tag { border-color: #bbb !important; background: none !important; }
 
   .research__card, .conf-card, .pub__item, .timeline__item {
     break-inside: avoid;
@@ -1687,6 +1672,18 @@ ul, ol {
     display: block;
     grid-column: 1 / -1;
     margin-top: 0.25rem;
+    font-size: 0.72rem;
+    color: #555;
+    word-break: break-all;
+  }
+
+  /* Same for the other external links a PI might want to follow from paper:
+     contact pills, lab links in the timeline, hero affiliation. (mailto: is
+     excluded — the address is already the visible text.) */
+  .contact__link[href^="http"]::after,
+  .timeline__content a[href^="http"]::after,
+  .hero__affiliation a[href^="http"]::after {
+    content: " (" attr(href) ")";
     font-size: 0.72rem;
     color: #555;
     word-break: break-all;

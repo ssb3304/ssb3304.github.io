@@ -14,8 +14,11 @@
   const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
 
   // ── Particle System (Neural Network Background) ──────────────
+  // getContext('2d') can return null under real conditions (canvas memory
+  // pressure on iOS Safari, blocked acceleration, canvas-blocking extensions).
+  // Everything below must degrade to "no background" — never a blank page.
   const canvas = document.getElementById('particle-canvas');
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas ? canvas.getContext('2d') : null;
   let particles = [];
   let mouse = { x: -1000, y: -1000 };
   let animFrame = null;
@@ -23,6 +26,7 @@
   let H = window.innerHeight;
 
   function resizeCanvas() {
+    if (!ctx) return;
     // Scale the backing store by devicePixelRatio (capped) so particles
     // render crisply on HiDPI/Retina screens; draw in CSS-pixel coordinates.
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -130,6 +134,7 @@
   }
 
   function renderStaticFrame() {
+    if (!ctx) return;
     ctx.clearRect(0, 0, W, H);
     particles.forEach(p => p.draw());
     drawConnections();
@@ -150,17 +155,19 @@
   }
 
   function startParticles() {
-    if (animFrame == null && !prefersReduced.matches) {
+    if (ctx && animFrame == null && !prefersReduced.matches) {
       animFrame = requestAnimationFrame(animateParticles);
     }
   }
 
-  resizeCanvas();
-  initParticles();
-  if (prefersReduced.matches) {
-    renderStaticFrame();
-  } else {
-    startParticles();
+  if (ctx) {
+    resizeCanvas();
+    initParticles();
+    if (prefersReduced.matches) {
+      renderStaticFrame();
+    } else {
+      startParticles();
+    }
   }
 
   // The field spans the whole page (behind the transparent sections). Pause only
@@ -216,7 +223,7 @@
       mouse.y = e.clientY;
       gx = e.clientX;
       gy = e.clientY;
-      if (!glowPending) {
+      if (cursorGlow && !glowPending) {
         glowPending = true;
         requestAnimationFrame(() => {
           cursorGlow.style.left = gx + 'px';
@@ -233,6 +240,12 @@
     document.addEventListener('mouseleave', () => {
       mouse.x = -1000;
       mouse.y = -1000;
+      // Fade the glow out instead of leaving a frozen blob at the exit edge;
+      // the next mousemove fades it back in (CSS transitions opacity).
+      if (cursorGlow) {
+        cursorGlow.style.opacity = '0';
+        glowShown = false;
+      }
     });
   }
 
@@ -264,6 +277,7 @@
   const scrollProgress = document.querySelector('.scroll-progress');
 
   function updateScrollProgress() {
+    if (!scrollProgress) return;
     const scrollTop = window.scrollY;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
     const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
@@ -274,10 +288,11 @@
   const nav = document.getElementById('nav');
   const hamburger = document.getElementById('hamburger');
   const navLinks = document.getElementById('nav-links');
-  const navAnchors = navLinks.querySelectorAll('a');
+  const navAnchors = navLinks ? navLinks.querySelectorAll('a') : [];
 
   // Scroll state for nav
   function updateNavState() {
+    if (!nav) return;
     if (window.scrollY > 50) {
       nav.classList.add('nav--scrolled');
     } else {
@@ -291,13 +306,13 @@
   let scrollLockY = 0;
 
   function menuIsOpen() {
-    return navLinks.classList.contains('open');
+    return !!navLinks && navLinks.classList.contains('open');
   }
 
   // Remove drawer links from the tab order only when it's a *closed* mobile
   // drawer; on desktop the same element is the visible horizontal nav.
   function refreshInert() {
-    navLinks.inert = mobileMQ.matches && !menuIsOpen();
+    if (navLinks) navLinks.inert = mobileMQ.matches && !menuIsOpen();
   }
 
   function openMenu() {
@@ -321,8 +336,14 @@
     document.body.style.top = '';
     document.body.style.width = '';
     // Instant, not smooth — html{scroll-behavior:smooth} would otherwise animate
-    // a jump-to-top-then-back when the drawer closes.
-    window.scrollTo({ top: y, left: 0, behavior: 'instant' });
+    // a jump-to-top-then-back when the drawer closes. Two-arg scrollTo (never
+    // the options object: 'instant' throws on pre-2022 Safari) with the CSS
+    // smooth behavior temporarily suppressed via inline style.
+    const rootStyle = document.documentElement.style;
+    const prevBehavior = rootStyle.scrollBehavior;
+    rootStyle.scrollBehavior = 'auto';
+    window.scrollTo(0, y);
+    rootStyle.scrollBehavior = prevBehavior;
   }
 
   function closeMenu(restoreFocus) {
@@ -336,38 +357,47 @@
     if (restoreFocus) hamburger.focus();
   }
 
-  hamburger.addEventListener('click', () => {
-    if (menuIsOpen()) closeMenu(true);
-    else openMenu();
-  });
+  if (hamburger && navLinks) {
+    hamburger.addEventListener('click', () => {
+      if (menuIsOpen()) closeMenu(true);
+      else openMenu();
+    });
 
-  // Close on link click
-  navAnchors.forEach(link => {
-    link.addEventListener('click', () => closeMenu(false));
-  });
+    // Close on link click
+    navAnchors.forEach(link => {
+      link.addEventListener('click', () => closeMenu(false));
+    });
 
-  // Close on Escape
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && menuIsOpen()) closeMenu(true);
-  });
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menuIsOpen()) closeMenu(true);
+    });
 
-  // Close on tap/click outside the drawer
-  document.addEventListener('click', (e) => {
-    if (!menuIsOpen()) return;
-    if (navLinks.contains(e.target) || hamburger.contains(e.target)) return;
-    closeMenu(false);
-  });
-
-  // Crossing the breakpoint (e.g. rotate to landscape at desktop width) must not
-  // leave a scroll-locked page with a hidden hamburger.
-  mobileMQ.addEventListener('change', () => {
-    if (!mobileMQ.matches && menuIsOpen()) {
+    // Close on tap/click outside the drawer
+    document.addEventListener('click', (e) => {
+      if (!menuIsOpen()) return;
+      if (navLinks.contains(e.target) || hamburger.contains(e.target)) return;
       closeMenu(false);
-    }
-    refreshInert();
-  });
+    });
 
-  refreshInert();
+    // Crossing the breakpoint (e.g. rotate to landscape at desktop width) must not
+    // leave a scroll-locked page with a hidden hamburger.
+    const onBreakpointChange = () => {
+      if (!mobileMQ.matches && menuIsOpen()) {
+        closeMenu(false);
+      }
+      refreshInert();
+    };
+    // addEventListener on MediaQueryList is missing on Safari ≤13 — a throw here
+    // would kill all the init below it, so feature-detect with the old API.
+    if (typeof mobileMQ.addEventListener === 'function') {
+      mobileMQ.addEventListener('change', onBreakpointChange);
+    } else if (typeof mobileMQ.addListener === 'function') {
+      mobileMQ.addListener(onBreakpointChange);
+    }
+
+    refreshInert();
+  }
 
   // Active section highlighting
   const sections = document.querySelectorAll('section[id]');
@@ -437,11 +467,15 @@
   window.addEventListener('scroll', () => {
     if (!ticking) {
       requestAnimationFrame(() => {
+        ticking = false;
+        // The drawer's body scroll lock clamps scrollY to 0; recomputing here
+        // would visibly zero the progress bar and clear the active nav link
+        // while the menu is open. State is refreshed on close via scrollTo.
+        if (menuIsOpen()) return;
         updateScrollProgress();
         updateNavState();
         updateActiveSection();
         updateBackToTop();
-        ticking = false;
       });
       ticking = true;
     }
@@ -453,34 +487,53 @@
   updateActiveSection();
   updateBackToTop();
 
+  // Same-session revisits (reload, back-navigation) get an instant hero, so the
+  // typing intro is skipped for them too — computed here because both the typing
+  // block and the hero entrance below key off it.
+  let heroSeen = false;
+  try { heroSeen = !!sessionStorage.getItem('heroSeen'); } catch (e) { /* private mode */ }
+
   // ── Typing Effect (hero subtitle) ────────────────────────────
   // Types the research thesis out character by character. Set up before the hero
   // entrance so the subtitle is already cleared when it fades in (no flash of the
-  // full line). Skipped under reduced-motion; the full sentence stays in the
-  // accessibility tree via aria-label and the box height is reserved so nothing
-  // below it jumps.
+  // full line). Skipped under reduced-motion and on same-session revisits (the
+  // subtitle then simply keeps its static text). While typing, the full sentence
+  // stays in the accessibility tree via aria-label and the box height is
+  // reserved so nothing below it jumps; both are undone once typing completes.
+  // try/catch: a failure in this decorative block must never stop the hero
+  // entrance below from running.
   const subtitle = document.querySelector('.hero__subtitle');
-  if (subtitle && !prefersReduced.matches) {
-    const fullText = subtitle.textContent.trim();
-    subtitle.setAttribute('aria-label', fullText);
-    subtitle.style.minHeight = subtitle.offsetHeight + 'px';
-    const typedSpan = document.createElement('span');
-    typedSpan.setAttribute('aria-hidden', 'true');
-    subtitle.textContent = '';
-    subtitle.appendChild(typedSpan);
-    subtitle.classList.add('typing');
+  if (subtitle && !heroSeen && !prefersReduced.matches) {
+    try {
+      const fullText = subtitle.textContent.trim();
+      subtitle.setAttribute('aria-label', fullText);
+      subtitle.style.minHeight = subtitle.offsetHeight + 'px';
+      const typedSpan = document.createElement('span');
+      typedSpan.setAttribute('aria-hidden', 'true');
+      subtitle.textContent = '';
+      subtitle.appendChild(typedSpan);
+      subtitle.classList.add('typing');
 
-    setTimeout(function () {
-      let i = 0;
-      (function step() {
-        if (i < fullText.length) {
-          typedSpan.textContent += fullText.charAt(i++);
-          setTimeout(step, 34 + Math.random() * 26);
-        } else {
-          setTimeout(() => subtitle.classList.remove('typing'), 1600);
-        }
-      })();
-    }, 700);
+      setTimeout(function () {
+        let i = 0;
+        (function step() {
+          if (i < fullText.length) {
+            typedSpan.textContent += fullText.charAt(i++);
+            setTimeout(step, 34 + Math.random() * 26);
+          } else {
+            // Typing done: hand the real text back to the accessibility tree.
+            typedSpan.removeAttribute('aria-hidden');
+            subtitle.removeAttribute('aria-label');
+            setTimeout(() => subtitle.classList.remove('typing'), 1600);
+          }
+        })();
+      }, 700);
+    } catch (e) {
+      // Restore a readable subtitle no matter what went wrong mid-setup.
+      subtitle.textContent = subtitle.getAttribute('aria-label') || subtitle.textContent;
+      subtitle.removeAttribute('aria-label');
+      subtitle.classList.remove('typing');
+    }
   }
 
   // ── Hero Entrance ────────────────────────────────────────────
@@ -496,9 +549,6 @@
       }
     });
   }
-
-  let heroSeen = false;
-  try { heroSeen = !!sessionStorage.getItem('heroSeen'); } catch (e) { /* private mode */ }
 
   if (prefersReduced.matches || heroSeen) {
     revealHero(true);
