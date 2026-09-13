@@ -754,6 +754,68 @@ ul, ol {
   white-space: nowrap;
 }
 
+/* Accent chip for statuses worth a second glance (in press, awards) —
+   shared by the publication and conference lists. */
+.pub__status {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  line-height: 1.4;
+  color: var(--accent-bright);
+  background: var(--accent-subtle);
+  border: 1px solid var(--border-hover);
+}
+
+/* --- Conference list ---
+   Publications-style rows (non-linked: posters/talks have no landing page).
+   The photo-card design is parked in an HTML comment for a later return. */
+.conf-item {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 1.5rem;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.conf-list li:first-child .conf-item {
+  padding-top: 0;
+}
+
+.conf-item__date {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--accent);
+  font-weight: 500;
+  padding-top: 0.15rem;
+  white-space: nowrap;
+}
+
+.conf-item__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  line-height: 1.5;
+}
+
+.conf-item__authors {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.2rem;
+}
+
+.conf-item__authors strong {
+  color: var(--accent-bright);
+  font-weight: 600;
+}
+
+.conf-item__venue {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
 /* --- Timeline --- */
 .timeline {
   position: relative;
@@ -997,6 +1059,15 @@ ul, ol {
   }
 
   .pub__year {
+    padding-top: 0;
+  }
+
+  .conf-item {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  .conf-item__date {
     padding-top: 0;
   }
 
@@ -1430,15 +1501,6 @@ ul, ol {
   transform: scale(1.025);
 }
 
-.conferences__note {
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  margin-top: 2.5rem;
-  letter-spacing: 0.05em;
-}
-
 @media (max-width: 768px) {
   .conferences__grid {
     grid-template-columns: 1fr;
@@ -1619,8 +1681,7 @@ ul, ol {
   .research__card-icon,
   .conf-card__gallery,
   .personal__stack,
-  .personal__note,
-  .conferences__note {
+  .personal__note {
     display: none !important;
   }
 
@@ -1647,19 +1708,25 @@ ul, ol {
   .section__title, .about__lead, .about__text,
   .hero__name, .hero__subtitle,
   .about__lead strong, .about__lead em, .about__text strong,
-  .timeline__org, .pub__authors strong {
+  .timeline__org, .pub__authors strong, .conf-item__authors strong {
     color: #111 !important;
   }
 
   .section__number,
   .pub__venue, .timeline__range, .pub__authors, .footer,
-  .pub__year, .pub__type, .conf-card__date, .hero__status {
+  .pub__year, .pub__type, .pub__status, .conf-card__date, .hero__status,
+  .conf-item__date, .conf-item__authors, .conf-item__venue {
     color: #555 !important;
+  }
+
+  .pub__status {
+    background: none !important;
+    border-color: #bbb !important;
   }
 
   a { color: #111 !important; text-decoration: underline; }
 
-  .research__card, .conf-card, .pub__item, .timeline__item {
+  .research__card, .conf-card, .pub__item, .timeline__item, .conf-item {
     break-inside: avoid;
     border-color: #ccc !important;
     box-shadow: none !important;
