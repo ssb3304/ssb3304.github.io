@@ -19,6 +19,18 @@
   // Everything below must degrade to "no background" — never a blank page.
   const canvas = document.getElementById('particle-canvas');
   const ctx = canvas ? canvas.getContext('2d') : null;
+  // Particle colors come from CSS tokens (--particle-rgb / --particle-link-rgb)
+  // so the canvas follows the active theme; re-read on every theme switch.
+  let particleRGB = '59, 130, 246';
+  let particleLinkRGB = '96, 165, 250';
+  function refreshParticlePalette() {
+    const cs = getComputedStyle(document.documentElement);
+    const dot = cs.getPropertyValue('--particle-rgb').trim();
+    const link = cs.getPropertyValue('--particle-link-rgb').trim();
+    if (dot) particleRGB = dot;
+    if (link) particleLinkRGB = link;
+  }
+  refreshParticlePalette();
   let particles = [];
   let mouse = { x: -1000, y: -1000 };
   let animFrame = null;
@@ -81,7 +93,7 @@
     draw() {
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(59, 130, 246, ${this.opacity})`;
+      ctx.fillStyle = `rgba(${particleRGB}, ${this.opacity})`;
       ctx.fill();
     }
   }
@@ -109,7 +121,7 @@
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(59, 130, 246, ${opacity})`;
+          ctx.strokeStyle = `rgba(${particleRGB}, ${opacity})`;
           ctx.lineWidth = 0.5;
           ctx.stroke();
         }
@@ -126,7 +138,7 @@
         ctx.beginPath();
         ctx.moveTo(particles[i].x, particles[i].y);
         ctx.lineTo(mouse.x, mouse.y);
-        ctx.strokeStyle = `rgba(96, 165, 250, ${opacity})`;
+        ctx.strokeStyle = `rgba(${particleLinkRGB}, ${opacity})`;
         ctx.lineWidth = 0.8;
         ctx.stroke();
       }
@@ -289,6 +301,7 @@
   const hamburger = document.getElementById('hamburger');
   const navLinks = document.getElementById('nav-links');
   const navAnchors = navLinks ? navLinks.querySelectorAll('a') : [];
+  const themeToggle = document.getElementById('theme-toggle');
 
   // Scroll state for nav
   function updateNavState() {
@@ -317,6 +330,7 @@
 
   function openMenu() {
     navLinks.classList.add('open');
+    if (nav) nav.classList.add('nav--menu-open');
     hamburger.classList.add('active');
     hamburger.setAttribute('aria-expanded', 'true');
     if (navBackdrop) navBackdrop.classList.add('open');
@@ -349,6 +363,7 @@
   function closeMenu(restoreFocus) {
     if (!menuIsOpen()) return;
     navLinks.classList.remove('open');
+    if (nav) nav.classList.remove('nav--menu-open');
     hamburger.classList.remove('active');
     hamburger.setAttribute('aria-expanded', 'false');
     if (navBackdrop) navBackdrop.classList.remove('open');
@@ -373,10 +388,12 @@
       if (e.key === 'Escape' && menuIsOpen()) closeMenu(true);
     });
 
-    // Close on tap/click outside the drawer
+    // Close on tap/click outside the drawer (the theme toggle sits in the bar
+    // above the open drawer and should switch themes without closing it)
     document.addEventListener('click', (e) => {
       if (!menuIsOpen()) return;
       if (navLinks.contains(e.target) || hamburger.contains(e.target)) return;
+      if (themeToggle && themeToggle.contains(e.target)) return;
       closeMenu(false);
     });
 
@@ -434,6 +451,71 @@
       window.scrollTo({ top: 0, behavior: prefersReduced.matches ? 'auto' : 'smooth' });
     });
   }
+
+  // ── Theme Toggle ─────────────────────────────────────────────
+  // The <head> bootstrap already applied a saved light preference before
+  // first paint. This wires the button, keeps the aria-label and the mobile
+  // browser chrome color (<meta name="theme-color">) in sync, persists the
+  // choice, and re-reads the particle palette so the canvas follows the CSS.
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  const themeStatus = document.getElementById('theme-status');
+  // Must match --bg-primary of each theme in style.css and the head bootstrap
+  const THEME_META_COLOR = { dark: '#0a0e17', light: '#f4f6fa' };
+  let themeSwitchTimer = null;
+
+  function currentTheme() {
+    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  }
+
+  function syncThemeUI(theme) {
+    if (themeMeta) themeMeta.setAttribute('content', THEME_META_COLOR[theme]);
+    if (themeToggle) {
+      themeToggle.setAttribute('aria-label',
+        theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+    }
+  }
+
+  // persist === false when mirroring a change made in another tab
+  function applyTheme(theme, persist) {
+    const root = document.documentElement;
+    // Brief global color transition so the switch crossfades instead of snapping.
+    root.classList.add('theme-switching');
+    clearTimeout(themeSwitchTimer);
+    themeSwitchTimer = setTimeout(() => root.classList.remove('theme-switching'), 400);
+
+    if (theme === 'light') root.setAttribute('data-theme', 'light');
+    else root.removeAttribute('data-theme');
+    syncThemeUI(theme);
+    refreshParticlePalette();
+    // The rAF loop picks the palette up next frame; a parked canvas needs a repaint.
+    if (ctx && animFrame == null) renderStaticFrame();
+    // Most screen readers do not re-read a focused button whose name changed.
+    if (themeStatus) themeStatus.textContent = theme === 'light' ? 'Light theme on' : 'Dark theme on';
+    if (persist !== false) {
+      try { localStorage.setItem('theme', theme); } catch (e) { /* private mode */ }
+    }
+  }
+
+  // Another tab (or a bfcache restore) may have changed the stored choice.
+  function syncThemeFromStorage() {
+    let stored = null;
+    try { stored = localStorage.getItem('theme'); } catch (e) { return; }
+    const want = stored === 'light' ? 'light' : 'dark';
+    if (want !== currentTheme()) applyTheme(want, false);
+  }
+
+  syncThemeUI(currentTheme());
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      applyTheme(currentTheme() === 'light' ? 'dark' : 'light');
+    });
+  }
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'theme' || e.key === null) syncThemeFromStorage();
+  });
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) syncThemeFromStorage();
+  });
 
   // ── Scroll Reveal ────────────────────────────────────────────
   // Hero reveals are choreographed by revealHero(); exclude them here so the

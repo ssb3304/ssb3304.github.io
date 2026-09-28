@@ -3,13 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a0e17">
   <!-- Set .js early so reveal-hidden state applies only when JS can restore it -->
-  <script>document.documentElement.classList.add('js');</script>
+  <script>
+    document.documentElement.classList.add('js');
+    // Theme bootstrap: apply a saved light preference BEFORE the stylesheet
+    // paints so there is no flash of the dark theme. Default is dark (no
+    // attribute); anything other than a stored 'light' means dark. The
+    // theme-color meta above is switched here as well so mobile browser
+    // chrome does not flash dark on a light-theme load (#f4f6fa = light
+    // --bg-primary in style.css).
+    (function () {
+      try {
+        if (localStorage.getItem('theme') === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute('content', '#f4f6fa');
+        }
+      } catch (e) { /* storage blocked: stay dark */ }
+    })();
+  </script>
   <title>Seungbeom Seo — Neuroscience &amp; BCI Researcher</title>
   <meta name="description" content="Seungbeom Seo — M.S. student in Biomedical Engineering at UNIST, researching EEG-based brain–computer interfaces, neural decoding, and the cognitive neuroscience of visual perception.">
   <link rel="canonical" href="https://ssb3304.github.io/">
   <meta name="author" content="Seungbeom Seo">
-  <meta name="theme-color" content="#0a0e17">
 
   <!-- Icons -->
   <link rel="icon" href="/favicon.ico" sizes="32x32">
@@ -41,7 +58,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/style.css?v=7">
 
   <script type="application/ld+json">
   {
@@ -85,9 +102,6 @@
   <nav class="nav" id="nav">
     <div class="nav__inner">
       <a href="#hero" class="nav__logo">S<span class="accent">.</span>Seo</a>
-      <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu" aria-controls="nav-links" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
       <ul class="nav__links" id="nav-links">
         <li><a href="#about">About</a></li>
         <li><a href="#research">Research</a></li>
@@ -97,8 +111,22 @@
         <li><a href="#personal">Personal</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
+      <div class="nav__actions">
+        <!-- Shows the sun on the dark theme (action: go light) and the moon on
+             the light theme; the aria-label is kept in sync by main.js. -->
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light theme">
+          <svg class="theme-toggle__icon theme-toggle__icon--sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+          <svg class="theme-toggle__icon theme-toggle__icon--moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu" aria-controls="nav-links" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </nav>
+  <!-- Announces theme switches: a focused button whose name changes is not
+       re-read by most screen readers. Filled by main.js. -->
+  <span id="theme-status" class="sr-only" aria-live="polite"></span>
 
   <main id="main" tabindex="-1">
 
@@ -112,7 +140,7 @@
       </h1>
       <p class="hero__status reveal">
         <span class="hero__status-dot" aria-hidden="true"></span>
-        Open to PhD positions &middot; Neuroscience &amp; BCI
+        Open to PhD positions &middot; Neuroscience&nbsp;&amp;&nbsp;BCI
       </p>
       <p class="hero__subtitle reveal">Decoding the brain, one wave at a time.</p>
       <p class="hero__affiliation reveal">
@@ -685,6 +713,6 @@
     <p>&copy; 2026 Seungbeom Seo. Built with care.</p>
   </footer>
 
-  <script src="js/main.js?v=5"></script>
+  <script src="js/main.js?v=6"></script>
 </body>
 </html>

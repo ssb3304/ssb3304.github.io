@@ -26,6 +26,45 @@
   --border: rgba(59, 130, 246, 0.12);
   --border-hover: rgba(59, 130, 246, 0.3);
 
+  /* Surfaces that used to be hardcoded; the light theme overrides these too */
+  --nav-bg: rgba(10, 14, 23, 0.75);
+  --nav-bg-scrolled: rgba(10, 14, 23, 0.95);
+  --nav-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  --backdrop-bg: rgba(6, 9, 16, 0.55);
+  --drawer-bg: rgba(15, 20, 32, 0.98);
+  --back-to-top-bg: rgba(15, 20, 32, 0.85);
+  --shadow-card: 0 20px 40px rgba(0, 0, 0, 0.3);
+  --shadow-pill: 0 8px 25px rgba(0, 0, 0, 0.2);
+  --status-bg: rgba(52, 211, 153, 0.06);
+  --selection-bg: #1d4ed8;
+  --selection-fg: #fff;
+  /* Cursor glow: 'screen' lights up a dark ground; light theme swaps both */
+  --glow-color: var(--accent-glow);
+  --glow-blend: screen;
+  --photo-glow: rgba(59, 130, 246, 0.18);
+  --photo-glow-hover: rgba(59, 130, 246, 0.32);
+  /* Canvas particle colors as "r, g, b" triplets (read by main.js) */
+  --particle-rgb: 59, 130, 246;
+  --particle-link-rgb: 96, 165, 250;
+
+  /* Interactive states that used to hardcode white-on-blue */
+  --accent-hover: #93c5fd;
+  --accent-fill-hover: rgba(59, 130, 246, 0.15);
+  --btn-hover-text: #fff;
+  --focus-ring-contrast: #fff;
+  --shadow-float: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-card-heavy: 0 14px 34px rgba(0, 0, 0, 0.45);
+  --shadow-card-heavy-hover: 0 24px 50px rgba(0, 0, 0, 0.55);
+  --status-dot: #34d399;
+  --status-pulse: rgba(52, 211, 153, 0.5);
+  --status-border: var(--border);
+  --scrollbar-thumb: rgba(59, 130, 246, 0.30);
+  /* Accent when it carries small text (years, dates, section numbers): the
+     light theme needs a darker blue there than for decorative accents */
+  --accent-label: var(--accent);
+
+  color-scheme: dark;
+
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
@@ -41,6 +80,69 @@
 
   /* Nav */
   --nav-h: 64px;
+}
+
+/* ============================================================
+   Light theme — chosen with the nav toggle (data-theme="light" on <html>,
+   set pre-paint by the head bootstrap). Same slate/blue family as the dark
+   theme so the two read as siblings. Every text token was checked against
+   bg-primary, bg-card and bg-card-hover: all AA, most AAA (ratios noted).
+   ============================================================ */
+[data-theme="light"] {
+  --bg-primary: #f4f6fa;
+  --bg-card: #ffffff;
+  --bg-card-hover: #eff6ff;
+
+  --text-primary: #0f172a;          /* 16.5:1 on bg-primary */
+  --text-secondary: #455369;        /* 7.2:1 */
+  --text-muted: #566780;            /* 5.3:1, also 5.3:1 on bg-card-hover */
+
+  --accent: #2563eb;                /* decorative + 14px mono labels: 4.8:1 */
+  --accent-bright: #1d4ed8;         /* accent used as text/links: 6.2:1 */
+  --accent-hover: #1e40af;
+  --accent-glow: rgba(37, 99, 235, 0.16);
+  --accent-subtle: rgba(37, 99, 235, 0.07);
+  --accent-fill-hover: rgba(37, 99, 235, 0.12);
+  --btn-hover-text: #1d4ed8;        /* #fff on dark; 5.3:1 on the hover fill here */
+
+  --border: rgba(29, 78, 216, 0.20);
+  --border-hover: rgba(29, 78, 216, 0.65);
+
+  --nav-bg: rgba(244, 246, 250, 0.80);
+  --nav-bg-scrolled: rgba(244, 246, 250, 0.96);
+  --nav-shadow: 0 4px 30px rgba(15, 23, 42, 0.08);
+  --backdrop-bg: rgba(15, 23, 42, 0.35);
+  --drawer-bg: rgba(255, 255, 255, 0.98);
+  --back-to-top-bg: rgba(255, 255, 255, 0.9);
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(30, 58, 138, 0.08);
+  --shadow-card-heavy: 0 14px 34px rgba(15, 23, 42, 0.14);
+  --shadow-card-heavy-hover: 0 24px 50px rgba(15, 23, 42, 0.18);
+  --shadow-pill: 0 8px 25px rgba(15, 23, 42, 0.08);
+  --shadow-float: 0 8px 24px rgba(15, 23, 42, 0.18);
+  --focus-ring-contrast: #0f172a;
+
+  --status-bg: rgba(16, 185, 129, 0.10);
+  --status-dot: #059669;            /* 3.2:1 on the pill (was 1.6 with #34d399) */
+  --status-pulse: rgba(5, 150, 105, 0.4);
+  --status-border: rgba(5, 150, 105, 0.28);   /* keep the pill one green family */
+  --scrollbar-thumb: rgba(29, 78, 216, 0.28);
+  --accent-label: #1d4ed8;          /* 6.2:1 even under the cursor glow */
+
+  --selection-bg: #1d4ed8;
+  --selection-fg: #fff;
+
+  /* Cursor glow: multiply darkens a light ground into a faint blue wash
+     (screen would be invisible on white). Kept at a whisper so it never
+     reads as a gray smudge and small accent text under it stays AA. */
+  --glow-color: rgba(37, 99, 235, 0.05);
+  --glow-blend: multiply;
+  /* (no --photo-glow overrides: the light portrait has no glow, see below) */
+
+  /* Deeper blues: main.js bakes the alphas (dots 0.1-0.6, lines 0.15) */
+  --particle-rgb: 29, 78, 216;
+  --particle-link-rgb: 30, 64, 175;
+
+  color-scheme: light;
 }
 
 /* --- Reset --- */
@@ -76,7 +178,7 @@ a {
 }
 
 a:hover {
-  color: #93c5fd;
+  color: var(--accent-hover);
 }
 
 img {
@@ -95,7 +197,7 @@ ul, ol {
   height: 600px;
   border-radius: 50%;
   pointer-events: none;
-  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
   opacity: 0;
   transform: translate(-50%, -50%);
   /* Behind content (z-index 0, same plane as the particle canvas) so it
@@ -103,7 +205,7 @@ ul, ol {
      on by JS on first mouse move (fine pointers only). */
   z-index: 0;
   transition: opacity 0.4s ease;
-  mix-blend-mode: screen;
+  mix-blend-mode: var(--glow-blend);
 }
 
 /* --- Particle Canvas --- */
@@ -139,7 +241,7 @@ ul, ol {
   width: 100%;
   height: var(--nav-h);
   z-index: 10000;
-  background: rgba(10, 14, 23, 0.75);
+  background: var(--nav-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
@@ -147,8 +249,8 @@ ul, ol {
 }
 
 .nav--scrolled {
-  background: rgba(10, 14, 23, 0.95);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  background: var(--nav-bg-scrolled);
+  box-shadow: var(--nav-shadow);
 }
 
 /* Backdrop behind the open mobile drawer */
@@ -156,7 +258,7 @@ ul, ol {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(6, 9, 16, 0.55);
+  background: var(--backdrop-bg);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   opacity: 0;
@@ -189,6 +291,7 @@ ul, ol {
   min-height: 44px;
   display: inline-flex;
   align-items: center;
+  transition: opacity 0.25s var(--ease-out);
 }
 
 .nav__logo:hover {
@@ -203,6 +306,8 @@ ul, ol {
   display: flex;
   gap: 1.6rem;
   align-items: center;
+  /* Push the links (and the actions after them) to the right edge */
+  margin-left: auto;
 }
 
 .nav__links a {
@@ -275,6 +380,111 @@ ul, ol {
 
 .nav__hamburger.active span:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Right-side actions: theme toggle (+ hamburger on mobile) */
+.nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 1.1rem;
+}
+
+.theme-toggle {
+  position: relative;
+  /* Above the open mobile drawer, like the hamburger, so it stays usable */
+  z-index: 10002;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.25s var(--ease-out), background 0.25s var(--ease-out),
+              border-color 0.25s var(--ease-out);
+}
+
+/* Hover only on real hover devices (a filled circle would otherwise stay lit
+   after a tap); keyboard focus gets the same treatment. */
+@media (hover: hover) {
+  .theme-toggle:hover {
+    color: var(--text-primary);
+    background: var(--accent-subtle);
+    border-color: var(--border);
+  }
+}
+
+.theme-toggle:focus-visible {
+  color: var(--text-primary);
+  background: var(--accent-subtle);
+}
+
+/* Without main.js the button is dead — hide it (the .js class is set in <head>) */
+html:not(.js) .theme-toggle {
+  display: none;
+}
+
+/* Windows High Contrast replaces background-color with Canvas, which would
+   erase the hamburger's bars while the SVG toggle beside them still renders. */
+@media (forced-colors: active) {
+  .nav__hamburger span {
+    forced-color-adjust: none;
+    background: ButtonText;
+  }
+}
+
+/* Visually hidden, still read by assistive tech (theme announcements) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.theme-toggle__icon {
+  display: block;
+  /* 2.4 at 18px ≈ 1.8px strokes, close to the hamburger's 2px bars */
+  stroke-width: 2.4;
+}
+
+/* Next to the hamburger the icon rests in the same color as its bars */
+@media (max-width: 768px) {
+  .theme-toggle {
+    color: var(--text-primary);
+  }
+}
+
+/* Sun shows on dark (action: go light); moon shows on light */
+.theme-toggle__icon--moon {
+  display: none;
+}
+
+[data-theme="light"] .theme-toggle__icon--sun {
+  display: none;
+}
+
+[data-theme="light"] .theme-toggle__icon--moon {
+  display: block;
+}
+
+/* Crossfade colors for the 400ms after a switch (class set by main.js).
+   !important so component transitions that only animate transform/opacity
+   still fade their colors during the swap. */
+.theme-switching,
+.theme-switching *:not(.reveal):not(.nav__links):not(.nav__hamburger span):not(.nav__backdrop):not(.back-to-top),
+.theme-switching *::before,
+.theme-switching *::after {
+  /* The excluded elements animate opacity/transform (reveals, drawer slide,
+     hamburger morph, scrim, back-to-top) and keep their own lists. */
+  transition: background-color 0.3s ease, background 0.3s ease, color 0.3s ease,
+              border-color 0.3s ease, box-shadow 0.3s ease, fill 0.3s ease,
+              stroke 0.3s ease, border-radius 0.3s ease !important;
 }
 
 /* --- Hero --- */
@@ -352,9 +562,9 @@ ul, ol {
   font-size: 0.8rem;
   color: var(--text-secondary);
   padding: 0.35rem 0.9rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--status-border);
   border-radius: 999px;
-  background: rgba(52, 211, 153, 0.06);
+  background: var(--status-bg);
   margin-bottom: 1.5rem;
   letter-spacing: 0.02em;
 }
@@ -363,12 +573,14 @@ ul, ol {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #34d399;
+  background: var(--status-dot);
   animation: status-pulse 2.4s ease-out infinite;
 }
 
+/* var() inside keyframes resolves on the animated element, so the ring
+   follows the theme's --status-pulse. The alpha-0 stops keep any hue. */
 @keyframes status-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5); }
+  0% { box-shadow: 0 0 0 0 var(--status-pulse); }
   70% { box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
   100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
 }
@@ -412,9 +624,9 @@ ul, ol {
 }
 
 .hero__cta:hover {
-  background: rgba(59, 130, 246, 0.15);
+  background: var(--accent-fill-hover);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--btn-hover-text);
   transform: translateY(-2px);
   box-shadow: 0 8px 30px var(--accent-glow);
 }
@@ -426,7 +638,7 @@ ul, ol {
 }
 
 .hero__cta--ghost:hover {
-  color: #fff;
+  color: var(--btn-hover-text);
   background: var(--accent-subtle);
   border-color: var(--accent);
 }
@@ -501,7 +713,7 @@ ul, ol {
 .section__number {
   font-family: var(--font-mono);
   font-size: 0.9em;
-  color: var(--accent);
+  color: var(--accent-label);
   margin-right: 0.5rem;
   font-weight: 500;
 }
@@ -548,12 +760,30 @@ ul, ol {
     #000 28%,
     rgba(0, 0, 0, 0.45) 65%,
     transparent 100%);
-  filter: drop-shadow(0 0 28px rgba(59, 130, 246, 0.18));
+  filter: drop-shadow(0 0 28px var(--photo-glow));
 }
 
 .about__photo-frame:hover .about__photo-img {
   transform: scale(1.03);
-  filter: drop-shadow(0 0 40px rgba(59, 130, 246, 0.32));
+  filter: drop-shadow(0 0 40px var(--photo-glow-hover));
+}
+
+/* Light theme: the portrait has a navy studio backdrop baked into the PNG,
+   so the edge fade would leave a dark smudge on a light page. Show it as a
+   mounted portrait card on the same elevation system as the other cards:
+   14px radius, the light card shadow plus a hairline, heavier on hover. */
+[data-theme="light"] .about__photo-img {
+  -webkit-mask-image: none;
+  mask-image: none;
+  border-radius: 14px;
+  filter: none;
+  box-shadow: var(--shadow-card), 0 0 0 1px rgba(15, 23, 42, 0.06);
+  transition: transform 0.6s var(--ease-out), box-shadow 0.4s ease;
+}
+
+[data-theme="light"] .about__photo-frame:hover .about__photo-img {
+  filter: none;
+  box-shadow: var(--shadow-card-heavy), 0 0 0 1px rgba(15, 23, 42, 0.06);
 }
 
 .about__text {
@@ -599,7 +829,7 @@ ul, ol {
   border-color: var(--border-hover);
   background: var(--bg-card-hover);
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px var(--accent-glow);
+  box-shadow: var(--shadow-card), 0 0 30px var(--accent-glow);
 }
 
 .research__card:hover::before {
@@ -695,7 +925,7 @@ ul, ol {
 .pub__year {
   font-family: var(--font-mono);
   font-size: 0.875rem;
-  color: var(--accent);
+  color: var(--accent-label);
   font-weight: 500;
   padding-top: 0.15rem;
 }
@@ -787,7 +1017,7 @@ ul, ol {
 .conf-item__date {
   font-family: var(--font-mono);
   font-size: 0.875rem;
-  color: var(--accent);
+  color: var(--accent-label);
   font-weight: 500;
   padding-top: 0.15rem;
   white-space: nowrap;
@@ -844,7 +1074,7 @@ ul, ol {
   font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 500;
-  color: var(--accent);
+  color: var(--accent-label);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: 1.25rem;
@@ -962,7 +1192,7 @@ ul, ol {
   border-color: var(--accent);
   background: var(--accent-subtle);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2), 0 0 20px var(--accent-glow);
+  box-shadow: var(--shadow-pill), 0 0 20px var(--accent-glow);
 }
 
 .contact__link svg {
@@ -1017,7 +1247,7 @@ ul, ol {
     overflow-y: auto;
     overscroll-behavior: contain;
     flex-direction: column;
-    background: rgba(15, 20, 32, 0.98);
+    background: var(--drawer-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     padding: 5rem 2rem 2rem;
@@ -1041,6 +1271,19 @@ ul, ol {
 
   .nav__links a::after {
     display: none;
+  }
+
+  /* Open drawer: the bar strip left of the panel falls back to the scrim and
+     the logo fades out instead of being sliced by the panel edge. */
+  .nav.nav--menu-open {
+    background: transparent;
+    border-bottom-color: transparent;
+    box-shadow: none;
+  }
+
+  .nav.nav--menu-open .nav__logo {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .about__grid {
@@ -1094,6 +1337,7 @@ ul, ol {
     padding: 0.35rem 0.8rem;
     border-radius: 16px;
     line-height: 1.5;
+    text-wrap: balance;
   }
 
   /* Keep the fixed back-to-top button (bottom-right, 44px) clear of the
@@ -1127,8 +1371,8 @@ ul, ol {
 /* --- Selection --- */
 ::selection {
   /* Deeper blue so highlighted text keeps AA contrast (white on #1d4ed8 ≈ 6.3:1). */
-  background: #1d4ed8;
-  color: #fff;
+  background: var(--selection-bg);
+  color: var(--selection-fg);
 }
 
 /* --- Scrollbar --- */
@@ -1141,7 +1385,7 @@ ul, ol {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-hover);
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 
@@ -1220,9 +1464,9 @@ ul, ol {
 }
 
 .about__cv-btn:hover {
-  background: rgba(59, 130, 246, 0.15);
+  background: var(--accent-fill-hover);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--btn-hover-text);
   transform: translateY(-2px);
   box-shadow: 0 8px 22px var(--accent-glow);
 }
@@ -1249,7 +1493,7 @@ ul, ol {
   border: 1px solid var(--border-hover);
   border-radius: 10px;
   padding: 9px 9px 14px;
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45),
+  box-shadow: var(--shadow-card-heavy),
               0 0 0 1px rgba(255, 255, 255, 0.02) inset;
   transition: transform 0.65s var(--ease-spring),
               box-shadow 0.4s var(--ease-out),
@@ -1278,7 +1522,7 @@ ul, ol {
 
 .personal__card:hover {
   border-color: var(--accent);
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.55),
+  box-shadow: var(--shadow-card-heavy-hover),
               0 0 30px var(--accent-glow);
 }
 
@@ -1391,7 +1635,7 @@ ul, ol {
   border-color: var(--border-hover);
   background: var(--bg-card-hover);
   transform: translateY(-3px);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35),
+  box-shadow: var(--shadow-card),
               0 0 28px var(--accent-glow);
 }
 
@@ -1521,7 +1765,7 @@ ul, ol {
   justify-content: center;
   border: 1px solid var(--border-hover);
   border-radius: 50%;
-  background: rgba(15, 20, 32, 0.85);
+  background: var(--back-to-top-bg);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   color: var(--accent-bright);
@@ -1542,7 +1786,7 @@ ul, ol {
 .back-to-top:hover {
   background: var(--accent-subtle);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--btn-hover-text);
   transform: translateY(-2px);
 }
 
@@ -1556,20 +1800,22 @@ ul, ol {
   left: 1rem;
   top: -120px;
   z-index: 10003;
-  background: var(--accent);
+  /* Deeper blue than --accent: white on it is 6.3:1 in both themes */
+  background: var(--selection-bg);
   color: #fff;
   padding: 0.65rem 1.1rem;
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-float);
   transition: top 0.25s var(--ease-out);
 }
 
 .skip-link:focus {
   top: 0.75rem;
   color: #fff;
-  outline: 2px solid #fff;
+  /* The ring sits against the page, not the button: needs page contrast */
+  outline: 2px solid var(--focus-ring-contrast);
   outline-offset: 2px;
 }
 
@@ -1601,7 +1847,7 @@ ul, ol {
 .contact__link:focus-visible,
 .about__cv-btn:focus-visible,
 .hero__cta:focus-visible {
-  color: #fff;
+  color: var(--btn-hover-text);
   border-color: var(--accent);
   background: var(--accent-subtle);
 }
@@ -1659,7 +1905,39 @@ ul, ol {
    Print — PIs do circulate applicant materials on paper
    ============================================================ */
 @media print {
-  :root { color-scheme: light; }
+  /* Pin the tokens so the paper copy is identical whichever theme was on
+     screen when the visitor hit Print. */
+  :root,
+  [data-theme="light"] {
+    color-scheme: light;
+    --bg-primary: #fff;
+    --bg-card: #fff;
+    --bg-card-hover: #fff;
+    --text-primary: #111;
+    --text-secondary: #333;
+    --text-muted: #555;
+    --accent: #333;
+    --accent-bright: #111;
+    --accent-label: #333;
+    --border: #ccc;
+    --border-hover: #999;
+    --status-bg: transparent;
+    --status-border: #999;
+    --status-dot: #555;
+  }
+
+  .about__photo-img {
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+    border-radius: 8px !important;
+  }
+
+  .hero__status-dot {
+    animation: none !important;
+    box-shadow: none !important;
+  }
 
   body {
     background: #fff !important;
@@ -1678,6 +1956,7 @@ ul, ol {
   .back-to-top,
   .hero__scroll-indicator,
   .hero__cta,
+  .theme-toggle,
   .research__card-icon,
   .conf-card__gallery,
   .personal__stack,
