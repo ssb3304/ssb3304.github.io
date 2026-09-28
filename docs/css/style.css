@@ -131,11 +131,11 @@
   --selection-bg: #1d4ed8;
   --selection-fg: #fff;
 
-  /* Cursor glow: multiply darkens a light ground into a faint blue wash
-     (screen would be invisible on white). Kept at a whisper so it never
-     reads as a gray smudge and small accent text under it stays AA. */
-  --glow-color: rgba(37, 99, 235, 0.05);
-  --glow-blend: multiply;
+  /* Cursor glow: a clearly blue pool (normal blend keeps the hue instead of
+     graying it like multiply). 0.20 is the strongest value at which muted
+     text directly under the center still reads at 4.5:1. */
+  --glow-color: rgba(96, 165, 250, 0.20);
+  --glow-blend: normal;
   /* (no --photo-glow overrides: the light portrait has no glow, see below) */
 
   /* Deeper blues: main.js bakes the alphas (dots 0.1-0.6, lines 0.15) */
@@ -390,37 +390,89 @@ ul, ol {
   margin-left: 1.1rem;
 }
 
+/* iOS-style switch: moon at the left end, sun at the right end, a blue knob
+   sliding onto the active side and carrying its icon, so both themes are
+   visible at a glance. The button is 44px tall for the tap target; the
+   visible track is 50x26. */
 .theme-toggle {
   position: relative;
   /* Above the open mobile drawer, like the hamburger, so it stays usable */
   z-index: 10002;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 44px;
   height: 44px;
-  border-radius: 50%;
-  border: 1px solid transparent;
+  padding: 0 3px;
+  border: none;
+  border-radius: 999px;
   background: none;
-  color: var(--text-secondary);
   cursor: pointer;
-  transition: color 0.25s var(--ease-out), background 0.25s var(--ease-out),
-              border-color 0.25s var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Hover only on real hover devices (a filled circle would otherwise stay lit
-   after a tap); keyboard focus gets the same treatment. */
+.theme-toggle__track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 50px;
+  height: 26px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--accent-subtle);
+  border: 1px solid var(--border-hover);
+  color: var(--text-muted);
+  transition: border-color 0.25s var(--ease-out), color 0.25s var(--ease-out);
+}
+
+.theme-toggle__icon,
+.theme-toggle__knob-icon {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+.theme-toggle__knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  transition: transform 0.3s var(--ease-spring), background 0.25s var(--ease-out);
+}
+
+/* Travel = 48px inner width - 20px knob - 2px inset on each side */
+[data-theme="light"] .theme-toggle__knob {
+  transform: translateX(24px);
+}
+
+.theme-toggle__knob-icon--sun { display: none; }
+[data-theme="light"] .theme-toggle__knob-icon--moon { display: none; }
+[data-theme="light"] .theme-toggle__knob-icon--sun { display: block; }
+
+/* Hover only on real hover devices (would otherwise stay lit after a tap) */
 @media (hover: hover) {
-  .theme-toggle:hover {
-    color: var(--text-primary);
-    background: var(--accent-subtle);
-    border-color: var(--border);
+  .theme-toggle:hover .theme-toggle__track {
+    border-color: var(--accent);
+    color: var(--text-secondary);
   }
 }
 
+/* Ring around the visible track, not the taller invisible button box */
 .theme-toggle:focus-visible {
-  color: var(--text-primary);
-  background: var(--accent-subtle);
+  outline: none;
+}
+
+.theme-toggle:focus-visible .theme-toggle__track {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 3px;
+  border-color: var(--accent);
 }
 
 /* Without main.js the button is dead — hide it (the .js class is set in <head>) */
@@ -447,37 +499,11 @@ html:not(.js) .theme-toggle {
   white-space: nowrap;
 }
 
-.theme-toggle__icon {
-  display: block;
-  /* 2.4 at 18px ≈ 1.8px strokes, close to the hamburger's 2px bars */
-  stroke-width: 2.4;
-}
-
-/* Next to the hamburger the icon rests in the same color as its bars */
-@media (max-width: 768px) {
-  .theme-toggle {
-    color: var(--text-primary);
-  }
-}
-
-/* Sun shows on dark (action: go light); moon shows on light */
-.theme-toggle__icon--moon {
-  display: none;
-}
-
-[data-theme="light"] .theme-toggle__icon--sun {
-  display: none;
-}
-
-[data-theme="light"] .theme-toggle__icon--moon {
-  display: block;
-}
-
 /* Crossfade colors for the 400ms after a switch (class set by main.js).
    !important so component transitions that only animate transform/opacity
    still fade their colors during the swap. */
 .theme-switching,
-.theme-switching *:not(.reveal):not(.nav__links):not(.nav__hamburger span):not(.nav__backdrop):not(.back-to-top),
+.theme-switching *:not(.reveal):not(.nav__links):not(.nav__hamburger span):not(.nav__backdrop):not(.back-to-top):not(.theme-toggle__knob),
 .theme-switching *::before,
 .theme-switching *::after {
   /* The excluded elements animate opacity/transform (reveals, drawer slide,
@@ -768,22 +794,34 @@ html:not(.js) .theme-toggle {
   filter: drop-shadow(0 0 40px var(--photo-glow-hover));
 }
 
-/* Light theme: the portrait has a navy studio backdrop baked into the PNG,
-   so the edge fade would leave a dark smudge on a light page. Show it as a
-   mounted portrait card on the same elevation system as the other cards:
-   14px radius, the light card shadow plus a hairline, heavier on hover. */
+/* Two renditions: profile.png (navy backdrop, dissolves into the dark page)
+   and profile-cutout.png (transparent background) for the light theme. */
+.about__photo-img--light {
+  display: none;
+}
+
+[data-theme="light"] .about__photo-img--dark {
+  display: none;
+}
+
+[data-theme="light"] .about__photo-img--light {
+  display: block;
+  /* The cutout is narrower than the frame: fit it whole instead of cropping */
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+/* Light theme: the cutout sits directly on the page. drop-shadow follows the
+   alpha (a box-shadow would draw a rectangle), and a short bottom fade lets
+   the shirt dissolve instead of ending on the frame's straight edge. */
 [data-theme="light"] .about__photo-img {
-  -webkit-mask-image: none;
-  mask-image: none;
-  border-radius: 14px;
-  filter: none;
-  box-shadow: var(--shadow-card), 0 0 0 1px rgba(15, 23, 42, 0.06);
-  transition: transform 0.6s var(--ease-out), box-shadow 0.4s ease;
+  -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+  filter: drop-shadow(0 10px 22px rgba(15, 23, 42, 0.16));
 }
 
 [data-theme="light"] .about__photo-frame:hover .about__photo-img {
-  filter: none;
-  box-shadow: var(--shadow-card-heavy), 0 0 0 1px rgba(15, 23, 42, 0.06);
+  filter: drop-shadow(0 14px 30px rgba(15, 23, 42, 0.22)) drop-shadow(0 0 24px var(--accent-glow));
 }
 
 .about__text {

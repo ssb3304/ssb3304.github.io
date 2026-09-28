@@ -469,10 +469,8 @@
 
   function syncThemeUI(theme) {
     if (themeMeta) themeMeta.setAttribute('content', THEME_META_COLOR[theme]);
-    if (themeToggle) {
-      themeToggle.setAttribute('aria-label',
-        theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
-    }
+    // role="switch" with a fixed name ("Light theme"): state lives in aria-checked
+    if (themeToggle) themeToggle.setAttribute('aria-checked', theme === 'light' ? 'true' : 'false');
   }
 
   // persist === false when mirroring a change made in another tab

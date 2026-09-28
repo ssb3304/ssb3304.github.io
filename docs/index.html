@@ -112,11 +112,18 @@
         <li><a href="#contact">Contact</a></li>
       </ul>
       <div class="nav__actions">
-        <!-- Shows the sun on the dark theme (action: go light) and the moon on
-             the light theme; the aria-label is kept in sync by main.js. -->
-        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light theme">
-          <svg class="theme-toggle__icon theme-toggle__icon--sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-          <svg class="theme-toggle__icon theme-toggle__icon--moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <!-- iOS-style switch: moon at the left end, sun at the right end, and a
+             knob that slides onto the active side carrying its icon. Exposed as
+             a switch (aria-checked = light on); main.js keeps it in sync. -->
+        <button class="theme-toggle" id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Light theme">
+          <span class="theme-toggle__track" aria-hidden="true">
+            <svg class="theme-toggle__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <svg class="theme-toggle__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            <span class="theme-toggle__knob">
+              <svg class="theme-toggle__knob-icon theme-toggle__knob-icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+              <svg class="theme-toggle__knob-icon theme-toggle__knob-icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            </span>
+          </span>
         </button>
         <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu" aria-controls="nav-links" aria-expanded="false">
           <span></span><span></span><span></span>
@@ -176,7 +183,12 @@
       <div class="about__grid">
         <div class="about__photo reveal">
           <div class="about__photo-frame">
-            <img src="images/profile.png" alt="Seungbeom Seo" class="about__photo-img">
+            <!-- Two renditions of the same portrait: the navy studio backdrop
+                 dissolves into the dark page; the transparent cutout sits on
+                 the light page (CSS swaps them, only one is in the
+                 accessibility tree). -->
+            <img src="images/profile.png" alt="Seungbeom Seo" class="about__photo-img about__photo-img--dark">
+            <img src="images/profile-cutout.png" alt="Seungbeom Seo" class="about__photo-img about__photo-img--light">
           </div>
         </div>
         <div class="about__text reveal">
