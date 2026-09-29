@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>404 — Signal Lost · Seungbeom Seo</title>
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#0a0e17">
-  <!-- Same theme bootstrap as index.html: honor a saved light preference -->
+  <meta name="theme-color" content="#f4f6fa">
+  <!-- Same theme bootstrap as index.html: light by default, honor a saved dark choice -->
   <script>
     (function () {
       try {
-        if (localStorage.getItem('theme') === 'light') {
-          document.documentElement.setAttribute('data-theme', 'light');
+        if (localStorage.getItem('theme') === 'dark') {
+          document.documentElement.removeAttribute('data-theme');
           var m = document.querySelector('meta[name="theme-color"]');
-          if (m) m.setAttribute('content', '#f4f6fa');
+          if (m) m.setAttribute('content', '#0a0e17');
         }
-      } catch (e) { /* storage blocked: stay dark */ }
+      } catch (e) { /* storage blocked: stay light */ }
     })();
   </script>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">

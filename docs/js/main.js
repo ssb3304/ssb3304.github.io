@@ -424,6 +424,7 @@
     let currentId = '';
 
     sections.forEach(section => {
+      if (section.hidden) return;   // parked sections (offsetTop 0) must not win
       if (section.offsetTop <= scrollPos) {
         currentId = section.id;
       }
@@ -453,8 +454,9 @@
   }
 
   // ── Theme Toggle ─────────────────────────────────────────────
-  // The <head> bootstrap already applied a saved light preference before
-  // first paint. This wires the button, keeps the aria-label and the mobile
+  // Light is the shipped default; the <head> bootstrap already removed
+  // data-theme for a saved 'dark' choice before first paint. This wires the
+  // button, keeps the switch state (aria-checked) and the mobile
   // browser chrome color (<meta name="theme-color">) in sync, persists the
   // choice, and re-reads the particle palette so the canvas follows the CSS.
   const themeMeta = document.querySelector('meta[name="theme-color"]');
@@ -498,7 +500,7 @@
   function syncThemeFromStorage() {
     let stored = null;
     try { stored = localStorage.getItem('theme'); } catch (e) { return; }
-    const want = stored === 'light' ? 'light' : 'dark';
+    const want = stored === 'dark' ? 'dark' : 'light';   // light is the default
     if (want !== currentTheme()) applyTheme(want, false);
   }
 

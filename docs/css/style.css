@@ -62,6 +62,8 @@
   /* Accent when it carries small text (years, dates, section numbers): the
      light theme needs a darker blue there than for decorative accents */
   --accent-label: var(--accent);
+  /* Neutral hairline for list rows (the blue --border is invisible on navy) */
+  --divider: rgba(148, 163, 184, 0.18);
 
   color-scheme: dark;
 
@@ -83,9 +85,9 @@
 }
 
 /* ============================================================
-   Light theme — chosen with the nav toggle (data-theme="light" on <html>,
-   set pre-paint by the head bootstrap). Same slate/blue family as the dark
-   theme so the two read as siblings. Every text token was checked against
+   Light theme — the shipped default (data-theme="light" is in the markup; the
+   head bootstrap strips it pre-paint for a stored 'dark' choice). Same
+   slate/blue family as the dark theme so the two read as siblings. Every text token was checked against
    bg-primary, bg-card and bg-card-hover: all AA, most AAA (ratios noted).
    ============================================================ */
 [data-theme="light"] {
@@ -127,6 +129,7 @@
   --status-border: rgba(5, 150, 105, 0.28);   /* keep the pill one green family */
   --scrollbar-thumb: rgba(29, 78, 216, 0.28);
   --accent-label: #1d4ed8;          /* 6.2:1 even under the cursor glow */
+  --divider: rgba(15, 23, 42, 0.12);
 
   --selection-bg: #1d4ed8;
   --selection-fg: #fff;
@@ -218,6 +221,11 @@ ul, ol {
   pointer-events: none;
   z-index: 0;
   transition: opacity 0.5s ease;
+}
+
+/* On the light ground a full-alpha dot lands on glyphs at text-level contrast */
+[data-theme="light"] #particle-canvas {
+  opacity: 0.5;
 }
 
 /* --- Scroll Progress --- */
@@ -562,6 +570,11 @@ html:not(.js) .theme-toggle {
   line-height: 1.5;
 }
 
+/* Inter 300 loses stroke contrast on the light ground */
+[data-theme="light"] .hero__subtitle {
+  font-weight: 400;
+}
+
 /* Blinking caret shown while the subtitle types out */
 .hero__subtitle.typing::after {
   content: '';
@@ -585,8 +598,8 @@ html:not(.js) .theme-toggle {
   align-items: center;
   gap: 0.55rem;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--text-secondary);
+  font-size: 0.85rem;
+  color: var(--text-primary);   /* the one line written for the audience */
   padding: 0.35rem 0.9rem;
   border: 1px solid var(--status-border);
   border-radius: 999px;
@@ -596,6 +609,7 @@ html:not(.js) .theme-toggle {
 }
 
 .hero__status-dot {
+  flex-shrink: 0;
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -619,6 +633,7 @@ html:not(.js) .theme-toggle {
 
 .hero__affiliation a {
   color: var(--accent-bright);
+  white-space: nowrap;     /* never break inside a name */
   border-bottom: 1px solid transparent;
   transition: border-color 0.25s ease;
 }
@@ -730,22 +745,27 @@ html:not(.js) .theme-toggle {
 }
 
 .section__title {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  /* 32px floor on phones (was 28px) so the h2 keeps ~2x over the 16.8px
+     item titles; 40px from ~470px up as before */
+  font-size: clamp(2rem, 8.5vw, 2.5rem);
   font-weight: 700;
-  margin-bottom: 2.5rem;
+  line-height: 1.2;
+  margin-bottom: 3rem;
   letter-spacing: -0.02em;
 }
 
 .section__number {
   font-family: var(--font-mono);
-  font-size: 0.9em;
+  font-size: 0.75em;     /* a tag on the title, not a rival to it */
   color: var(--accent-label);
-  margin-right: 0.5rem;
+  margin-right: 0.6rem;
   font-weight: 500;
+  letter-spacing: 0;
+  vertical-align: 0.06em;
 }
 
 .section__intro {
-  font-size: 1.1rem;
+  font-size: 1.125rem;
   color: var(--text-secondary);
   max-width: 640px;
   margin-bottom: 3rem;
@@ -851,6 +871,11 @@ html:not(.js) .theme-toggle {
   overflow: hidden;
 }
 
+/* On a light ground elevation reads through shadow, not surface color */
+[data-theme="light"] .research__card {
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 4px 14px rgba(30, 58, 138, 0.06);
+}
+
 .research__card::before {
   content: '';
   position: absolute;
@@ -885,7 +910,7 @@ html:not(.js) .theme-toggle {
 }
 
 .research__card h3 {
-  font-size: 1.15rem;
+  font-size: 1.125rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
   color: var(--text-primary);
@@ -894,7 +919,7 @@ html:not(.js) .theme-toggle {
 .research__card p {
   font-size: 0.9rem;
   color: var(--text-secondary);
-  line-height: 1.7;
+  line-height: 1.6;
 }
 
 /* --- Publications --- */
@@ -907,7 +932,7 @@ html:not(.js) .theme-toggle {
   grid-template-columns: 80px 1fr;
   gap: 1.5rem;
   padding: 1.75rem 1.75rem 1.75rem 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--divider);
   transition: all 0.3s var(--ease-out);
   position: relative;
   color: inherit;
@@ -956,8 +981,18 @@ html:not(.js) .theme-toggle {
   transform: scaleY(1);
 }
 
-.pub__item:first-child {
+/* Scoped to the list's first row: every row's <a> is the first child of its
+   own <li>, so a bare .pub__item:first-child matched all of them. */
+.pub__list li:first-child .pub__item {
   padding-top: 0;
+}
+
+.pub__list li:first-child .pub__arrow {
+  top: 0.1rem;   /* keep the arrow level with the year on the padding-less first row */
+}
+
+.pub__list li:last-child .pub__item {
+  border-bottom: 0;
 }
 
 .pub__year {
@@ -965,20 +1000,21 @@ html:not(.js) .theme-toggle {
   font-size: 0.875rem;
   color: var(--accent-label);
   font-weight: 500;
-  padding-top: 0.15rem;
+  padding-top: 0.2rem;
 }
 
 .pub__title {
-  font-size: 1rem;
+  font-size: 1.125rem;   /* one shared item-title tier (18px), body stays 14.4px */
   font-weight: 600;
-  margin-bottom: 0.35rem;
-  line-height: 1.5;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
 }
 
 .pub__authors {
   font-size: 0.9rem;
   color: var(--text-secondary);
-  margin-bottom: 0.2rem;
+  line-height: 1.5;      /* metadata clusters under the title instead of matching its pitch */
+  margin-bottom: 0.125rem;
 }
 
 .pub__authors strong {
@@ -989,30 +1025,45 @@ html:not(.js) .theme-toggle {
 .pub__venue {
   font-size: 0.85rem;
   color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* The venue name is the second thing a reviewer looks for: lift it by color
+   role, not size, so the row reads title > where > who > numeric tail. */
+.pub__venue cite,
+.conf-item__venue cite {
+  color: var(--text-primary);
+  font-weight: 500;
+  font-style: italic;   /* real Inter italics are loaded for 400/500 */
 }
 
 .pub__badges {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
-  margin-top: 0.55rem;
+  margin-top: 0.65rem;
 }
 
 .pub__type {
   font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.05em;
+  font-size: 0.72rem;    /* 11.5px: above the legibility floor */
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0.18rem 0.6rem;
+  padding: 0.2rem 0.65rem;
   border-radius: 999px;
   line-height: 1.4;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   border: 1px solid var(--border);
+}
+
+[data-theme="light"] .pub__type {
+  background: rgba(15, 23, 42, 0.04);   /* reads as a chip, not a hairline ring */
 }
 
 .pub__footnote {
   margin-top: 1.75rem;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
   line-height: 1.7;
 }
@@ -1026,10 +1077,11 @@ html:not(.js) .theme-toggle {
    shared by the publication and conference lists. */
 .pub__status {
   font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.05em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0.18rem 0.6rem;
+  padding: 0.2rem 0.65rem;
   border-radius: 999px;
   line-height: 1.4;
   color: var(--accent-bright);
@@ -1045,33 +1097,79 @@ html:not(.js) .theme-toggle {
   grid-template-columns: 80px 1fr;
   gap: 1.5rem;
   padding: 1.75rem 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--divider);
 }
 
 .conf-list li:first-child .conf-item {
   padding-top: 0;
 }
 
+.conf-list li:last-child .conf-item {
+  border-bottom: 0;
+}
+
+/* Year groups: the 9-row list reads as three clusters instead of one column.
+   Same eyebrow language as the Experience timeline. */
+.conf-group {
+  margin-bottom: 3rem;
+}
+
+.conf-group:last-child {
+  margin-bottom: 0;
+}
+
+.conf-group__title {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent-label);
+  letter-spacing: 0.12em;
+  margin-bottom: 1.25rem;
+}
+
+/* Sections parked with the hidden attribute (e.g. Personal until photos exist) */
+.section[hidden] {
+  display: none;
+}
+
+/* Avoid one-word last lines under the larger titles (progressive enhancement) */
+.pub__title,
+.conf-item__title,
+.timeline__content h4,
+.about__lead,
+.pub__authors,
+.conf-item__authors {
+  text-wrap: pretty;
+}
+
+/* City names never break internally on phones */
+.conf-item__loc {
+  white-space: nowrap;
+}
+
 .conf-item__date {
   font-family: var(--font-mono);
   font-size: 0.875rem;
-  color: var(--accent-label);
-  font-weight: 500;
-  padding-top: 0.15rem;
+  /* Muted like .timeline__range: the blue label in this list is the year eyebrow */
+  color: var(--text-muted);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  padding-top: 0.2rem;
   white-space: nowrap;
 }
 
 .conf-item__title {
-  font-size: 1rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  margin-bottom: 0.35rem;
-  line-height: 1.5;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
 }
 
 .conf-item__authors {
   font-size: 0.9rem;
   color: var(--text-secondary);
-  margin-bottom: 0.2rem;
+  line-height: 1.5;
+  margin-bottom: 0.125rem;
 }
 
 .conf-item__authors strong {
@@ -1082,6 +1180,7 @@ html:not(.js) .theme-toggle {
 .conf-item__venue {
   font-size: 0.85rem;
   color: var(--text-secondary);
+  line-height: 1.5;
 }
 
 /* --- Timeline --- */
@@ -1101,7 +1200,7 @@ html:not(.js) .theme-toggle {
 }
 
 .timeline__group {
-  margin-bottom: 3rem;
+  margin-bottom: 3.5rem;   /* 2:1 against the 28px entry gap */
 }
 
 .timeline__group:last-child {
@@ -1110,12 +1209,12 @@ html:not(.js) .theme-toggle {
 
 .timeline__group-title {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.85rem;    /* one clear step above the 0.8rem date ranges */
+  font-weight: 600;
   color: var(--accent-label);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 1.25rem;
+  letter-spacing: 0.12em;
+  margin-bottom: 1.5rem;
   margin-left: -0.5rem;
 }
 
@@ -1152,24 +1251,30 @@ html:not(.js) .theme-toggle {
   font-family: var(--font-mono);
   font-size: 0.8rem;
   color: var(--text-muted);
+  letter-spacing: 0.02em;
+  line-height: 1.5;
   margin-bottom: 0.25rem;
 }
 
 .timeline__content h4 {
-  font-size: 1.05rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  margin-bottom: 0.15rem;
+  line-height: 1.4;
+  margin-bottom: 0.25rem;
 }
 
 .timeline__org {
   font-size: 0.9rem;
-  color: var(--accent-bright);
+  /* Not a link: keep blue for links and labels only */
+  color: var(--text-primary);
   font-weight: 500;
+  line-height: 1.5;
 }
 
 .timeline__desc {
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   color: var(--text-secondary);
+  line-height: 1.6;
   margin-top: 0.2rem;
 }
 
@@ -1198,7 +1303,7 @@ html:not(.js) .theme-toggle {
 /* --- Contact --- */
 .contact__intro {
   text-align: center;
-  font-size: 1.1rem;
+  font-size: 1.125rem;
   color: var(--text-secondary);
   margin-bottom: 2.5rem;
   line-height: 1.8;
@@ -1218,8 +1323,9 @@ html:not(.js) .theme-toggle {
   padding: 0.85rem 1.75rem;
   border: 1px solid var(--border);
   border-radius: 999px;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   font-size: 0.95rem;
+  font-weight: 500;
   transition: all 0.3s var(--ease-out);
   min-width: 280px;
   justify-content: center;
@@ -1231,6 +1337,23 @@ html:not(.js) .theme-toggle {
   background: var(--accent-subtle);
   transform: translateY(-2px);
   box-shadow: var(--shadow-pill), 0 0 20px var(--accent-glow);
+}
+
+/* One obvious action at the bottom of the page: the email pill mirrors the
+   hero's filled CTA; the other three stay ghosts. */
+.contact__link--primary {
+  color: var(--accent-bright);
+  background: var(--accent-subtle);
+  border-color: var(--border-hover);
+}
+
+.contact__link--primary:hover {
+  color: var(--accent-bright);
+  border-color: var(--accent);
+}
+
+#contact .section__title {
+  text-align: center;
 }
 
 .contact__link svg {
@@ -1246,7 +1369,7 @@ html:not(.js) .theme-toggle {
   padding: 2rem;
   font-size: 0.8rem;
   color: var(--text-muted);
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--divider);
   /* No opaque background — particle field continues through the footer too. */
 }
 
@@ -1330,6 +1453,22 @@ html:not(.js) .theme-toggle {
     text-align: center;
   }
 
+  /* Prose reads left-aligned on a phone; portrait and CV button stay centered */
+  .about__text {
+    text-align: left;
+  }
+
+  .about__cv-btn {
+    display: flex;
+    width: max-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .section__title {
+    margin-bottom: 2rem;
+  }
+
   .research__grid {
     grid-template-columns: 1fr;
   }
@@ -1371,18 +1510,51 @@ html:not(.js) .theme-toggle {
   /* The status pill needs ~370px at full size, so it wraps on phones —
      make the wrapped state look designed: smaller type, softer radius. */
   .hero__status {
-    font-size: 0.7rem;
-    padding: 0.35rem 0.8rem;
+    font-size: 0.78rem;
+    text-align: left;
+    line-height: 1.45;
+    align-items: flex-start;  /* two-line pill: the dot rides the first line */
+    padding: 0.4rem 0.9rem 0.4rem 0.75rem;
+    gap: 0.5rem;
     border-radius: 16px;
-    line-height: 1.5;
     text-wrap: balance;
+  }
+
+  .hero__status-dot {
+    margin-top: 0.4em;        /* centers the 8px dot on the first 18px line */
+  }
+
+  /* Item titles: cap the 18px tier so long titles stay at four lines */
+  .pub__title,
+  .conf-item__title,
+  .timeline__content h4 {
+    font-size: 1.05rem;
+  }
+
+  .hero__actions {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .hero__cta {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+
+  .hero__subtitle {
+    max-width: 21ch;         /* no orphaned 'a time.' */
+    margin-left: auto;
+    margin-right: auto;
   }
 
   /* Keep the fixed back-to-top button (bottom-right, 44px) clear of the
      centered footer line. */
   .footer {
-    padding-left: 4.5rem;
+    padding-left: 4.5rem;   /* clear of the fixed back-to-top button */
     padding-right: 4.5rem;
+    text-wrap: balance;
   }
 
   .timeline {
@@ -1433,22 +1605,19 @@ html:not(.js) .theme-toggle {
 
 /* --- About: structured bio --- */
 .about__lead {
-  font-size: 1.12rem;
+  font-size: 1.15rem;    /* 18.4px, the item-title tier; body is 16.8px */
   color: var(--text-primary);
-  line-height: 1.75;
-  font-weight: 300;
+  line-height: 1.7;
+  font-weight: 400;
 }
 
-.about__lead strong {
-  color: var(--accent-bright);
-  font-weight: 500;
-}
+/* Lead <strong> stays white (from .about__text strong): blue is reserved for
+   links and labels, and the institution/advisor here are not links. */
 
 .about__lead em {
   font-style: normal;
   color: var(--accent-bright);
   font-weight: 500;
-  border-bottom: 1px dashed var(--border-hover);
   padding-bottom: 1px;
 }
 
@@ -1959,6 +2128,7 @@ html:not(.js) .theme-toggle {
     --accent-label: #333;
     --border: #ccc;
     --border-hover: #999;
+    --divider: #ccc;
     --status-bg: transparent;
     --status-border: #999;
     --status-dot: #555;

@@ -1,26 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0a0e17">
+  <meta name="theme-color" content="#f4f6fa">
   <!-- Set .js early so reveal-hidden state applies only when JS can restore it -->
   <script>
     document.documentElement.classList.add('js');
-    // Theme bootstrap: apply a saved light preference BEFORE the stylesheet
-    // paints so there is no flash of the dark theme. Default is dark (no
-    // attribute); anything other than a stored 'light' means dark. The
-    // theme-color meta above is switched here as well so mobile browser
-    // chrome does not flash dark on a light-theme load (#f4f6fa = light
-    // --bg-primary in style.css).
+    // Theme bootstrap: LIGHT is the default (data-theme="light" ships in the
+    // markup, so it holds even without JS). A saved 'dark' choice is applied
+    // BEFORE the stylesheet paints so there is no flash of the light theme;
+    // the theme-color meta above follows (#0a0e17 = dark --bg-primary).
     (function () {
       try {
-        if (localStorage.getItem('theme') === 'light') {
-          document.documentElement.setAttribute('data-theme', 'light');
+        if (localStorage.getItem('theme') === 'dark') {
+          document.documentElement.removeAttribute('data-theme');
           var m = document.querySelector('meta[name="theme-color"]');
-          if (m) m.setAttribute('content', '#f4f6fa');
+          if (m) m.setAttribute('content', '#0a0e17');
         }
-      } catch (e) { /* storage blocked: stay dark */ }
+      } catch (e) { /* storage blocked: stay light */ }
     })();
   </script>
   <title>Seungbeom Seo — Neuroscience &amp; BCI Researcher</title>
@@ -57,8 +55,8 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=7">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=8">
 
   <script type="application/ld+json">
   {
@@ -108,14 +106,16 @@
         <li><a href="#publications">Publications</a></li>
         <li><a href="#experience">Experience</a></li>
         <li><a href="#conferences">Conferences</a></li>
+        <!-- Personal is hidden until real photos land (the section carries the hidden attribute)
         <li><a href="#personal">Personal</a></li>
+        -->
         <li><a href="#contact">Contact</a></li>
       </ul>
       <div class="nav__actions">
         <!-- iOS-style switch: moon at the left end, sun at the right end, and a
              knob that slides onto the active side carrying its icon. Exposed as
              a switch (aria-checked = light on); main.js keeps it in sync. -->
-        <button class="theme-toggle" id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Light theme">
+        <button class="theme-toggle" id="theme-toggle" type="button" role="switch" aria-checked="true" aria-label="Light theme">
           <span class="theme-toggle__track" aria-hidden="true">
             <svg class="theme-toggle__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
             <svg class="theme-toggle__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
@@ -147,7 +147,7 @@
       </h1>
       <p class="hero__status reveal">
         <span class="hero__status-dot" aria-hidden="true"></span>
-        Open to PhD positions &middot; Neuroscience&nbsp;&amp;&nbsp;BCI
+        Open to PhD positions&nbsp;&middot; Neuroscience&nbsp;&amp;&nbsp;BCI
       </p>
       <p class="hero__subtitle reveal">Decoding the brain, one wave at a time.</p>
       <p class="hero__affiliation reveal">
@@ -197,12 +197,12 @@
           </p>
           <p>What drives me is a simple fascination: how neural signals can bridge thought and action. With that lens, I aim to build technologies that</p>
           <ul class="about__goals">
-            <li>enhance <strong>human&ndash;machine collaboration</strong>,</li>
-            <li>enable <strong>communication for people with severe motor impairments</strong>, and</li>
-            <li>support <strong>adaptive neurorehabilitation</strong>.</li>
+            <li>enhance human&ndash;machine collaboration,</li>
+            <li>enable communication for people with severe motor impairments, and</li>
+            <li>support adaptive neurorehabilitation.</li>
           </ul>
           <p>
-            I draw on <strong>cognitive neuroscience</strong>, <strong>signal processing</strong>, and <strong>machine / deep learning</strong> to push BCIs beyond the lab &mdash; toward systems that meet real human needs.
+            I draw on cognitive neuroscience, signal processing, and machine / deep learning to push BCIs beyond the lab &mdash; toward systems that meet real human needs.
           </p>
           <p>
             Beyond research, I'm a food enthusiast and a dedicated traveler. Hunting down authentic local cuisine and unfamiliar cultural narratives keeps my curiosity sharp &mdash; I bring the same taste for adventure to every problem I work on.
@@ -273,10 +273,7 @@
             <div class="pub__details">
               <h3 class="pub__title">Reducing cognitive demand fails to mitigate choice overload: Multimodal neural and gaze evidence for effort conservation</h3>
               <p class="pub__authors"><strong>S. Seo</strong>, S. Lee, N. Lee &amp; S.-P. Kim</p>
-              <p class="pub__venue"><em>iScience</em>, 29, 117616</p>
-              <div class="pub__badges">
-                <span class="pub__type">Journal</span>
-              </div>
+              <p class="pub__venue"><cite>iScience</cite>, 29, 117616</p>
             </div>
             <span class="pub__arrow" aria-hidden="true">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
@@ -289,10 +286,7 @@
             <div class="pub__details">
               <h3 class="pub__title">Low-frequency EEG power and coherence differ between drug-induced parkinsonism and Parkinson's disease</h3>
               <p class="pub__authors"><strong>S. Seo</strong>, S. Kim, S.-P. Kim, J.-H. Kim, S. Y. Kang &amp; D. Chung</p>
-              <p class="pub__venue"><em>Clinical Neurophysiology</em>, 168, 131&ndash;138</p>
-              <div class="pub__badges">
-                <span class="pub__type">Journal</span>
-              </div>
+              <p class="pub__venue"><cite>Clinical Neurophysiology</cite>, 168, 131&ndash;138</p>
             </div>
             <span class="pub__arrow" aria-hidden="true">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
@@ -305,10 +299,7 @@
             <div class="pub__details">
               <h3 class="pub__title">Viewer Emotional Response to Webtoon-Based Drama: An EEG Analysis</h3>
               <p class="pub__authors">J. Park, S. Wang, S. Lee, <strong>S. Seo</strong>, N. Lee &amp; S. Kim</p>
-              <p class="pub__venue"><em>International Journal of Human&ndash;Computer Interaction</em>, 1&ndash;15</p>
-              <div class="pub__badges">
-                <span class="pub__type">Journal</span>
-              </div>
+              <p class="pub__venue"><cite>International Journal of Human&ndash;Computer Interaction</cite>, 1&ndash;15</p>
             </div>
             <span class="pub__arrow" aria-hidden="true">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
@@ -321,10 +312,7 @@
             <div class="pub__details">
               <h3 class="pub__title">Computational and Histological Analyses for Investigating Mechanical Interaction of Thermally Drawn Fiber Implants with Brain Tissue</h3>
               <p class="pub__authors">K. Kim, C. Sung, J. Lee, J. Won, W. Jeon, <strong>S. Seo</strong>, K. Yoon &amp; S. Park</p>
-              <p class="pub__venue"><em>Micromachines</em>, 12(4), 394</p>
-              <div class="pub__badges">
-                <span class="pub__type">Journal</span>
-              </div>
+              <p class="pub__venue"><cite>Micromachines</cite>, 12(4), 394</p>
             </div>
             <span class="pub__arrow" aria-hidden="true">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
@@ -337,10 +325,7 @@
             <div class="pub__details">
               <h3 class="pub__title">The Effect of OTT Subscription Fee on Content Engagement</h3>
               <p class="pub__authors">S. Lee, <strong>S. Seo</strong>, N. Lee &amp; S.-P. Kim</p>
-              <p class="pub__venue"><em>The Journal of Korean Institute of Communications and Information Sciences</em>, 46(3), 572&ndash;582</p>
-              <div class="pub__badges">
-                <span class="pub__type">Journal</span>
-              </div>
+              <p class="pub__venue"><cite>The Journal of Korean Institute of Communications and Information Sciences</cite>, 46(3), 572&ndash;582</p>
             </div>
             <span class="pub__arrow" aria-hidden="true">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
@@ -433,40 +418,36 @@
       <h2 class="section__title reveal">
         <span class="section__number" aria-hidden="true">05.</span> Conferences
       </h2>
-      <ol class="conf-list">
+      <div class="conf-group">
+        <h3 class="conf-group__title">2026</h3>
+        <ol class="conf-list">
         <li class="reveal">
           <div class="conf-item">
-            <div class="conf-item__date">Nov 2026</div>
+            <div class="conf-item__date"><time datetime="2026-11">Nov</time><span class="sr-only"> 2026</span></div>
             <div class="conf-item__details">
-              <h3 class="conf-item__title">Closed-loop motor-imagery brain&ndash;computer interface training reshapes visual-motion perception</h3>
+              <h4 class="conf-item__title">Closed-loop motor-imagery brain&ndash;computer interface training reshapes visual-motion perception</h4>
               <p class="conf-item__authors"><strong>S. Seo</strong>, O.-S. Kwon &amp; S.-P. Kim</p>
-              <p class="conf-item__venue"><em>Society for Neuroscience (SfN) 2026</em> &middot; Washington, DC</p>
-              <div class="pub__badges">
-                <span class="pub__type">Poster</span>
-              </div>
+              <p class="conf-item__venue"><cite>Society for Neuroscience (SfN) 2026</cite>&nbsp;&middot; <span class="conf-item__loc">Washington, DC</span></p>
             </div>
           </div>
         </li>
         <li class="reveal">
           <div class="conf-item">
-            <div class="conf-item__date">Oct 2026</div>
+            <div class="conf-item__date"><time datetime="2026-10">Oct</time><span class="sr-only"> 2026</span></div>
             <div class="conf-item__details">
-              <h3 class="conf-item__title">Closed-loop motor-imagery BCI training transfers to perception of the stimulus it controls</h3>
+              <h4 class="conf-item__title">Closed-loop motor-imagery BCI training transfers to perception of the stimulus it controls</h4>
               <p class="conf-item__authors"><strong>S. Seo</strong>, O.-S. Kwon &amp; S.-P. Kim</p>
-              <p class="conf-item__venue"><em>2026 Korea BCI Society Fall Conference</em> &middot; Suwon, South Korea</p>
-              <div class="pub__badges">
-                <span class="pub__type">Poster</span>
-              </div>
+              <p class="conf-item__venue"><cite>2026 Korea BCI Society Fall Conference</cite>&nbsp;&middot; <span class="conf-item__loc">Suwon, South Korea</span></p>
             </div>
           </div>
         </li>
         <li class="reveal">
           <div class="conf-item">
-            <div class="conf-item__date">Jul 2026</div>
+            <div class="conf-item__date"><time datetime="2026-07">Jul</time><span class="sr-only"> 2026</span></div>
             <div class="conf-item__details">
-              <h3 class="conf-item__title">EEG neurometric&ndash;psychometric dissociation in visual motion perception</h3>
+              <h4 class="conf-item__title">EEG neurometric&ndash;psychometric dissociation in visual motion perception</h4>
               <p class="conf-item__authors"><strong>S. Seo</strong>, O.-S. Kwon &amp; S.-P. Kim</p>
-              <p class="conf-item__venue"><em>Brain Engineering Society of Korea 2026</em> &middot; Jeju, South Korea</p>
+              <p class="conf-item__venue"><cite>Brain Engineering Society of Korea 2026</cite>&nbsp;&middot; <span class="conf-item__loc">Jeju, South Korea</span></p>
               <div class="pub__badges">
                 <span class="pub__type">Talk</span>
                 <span class="pub__status">Outstanding Paper Award</span>
@@ -476,83 +457,76 @@
         </li>
         <li class="reveal">
           <div class="conf-item">
-            <div class="conf-item__date">May 2026</div>
+            <div class="conf-item__date"><time datetime="2026-05">May</time><span class="sr-only"> 2026</span></div>
             <div class="conf-item__details">
-              <h3 class="conf-item__title">EEG neurometric function mirrors psychometric performance in visual motion perception</h3>
+              <h4 class="conf-item__title">EEG neurometric function mirrors psychometric performance in visual motion perception</h4>
               <p class="conf-item__authors"><strong>S. Seo</strong>, O.-S. Kwon &amp; S.-P. Kim</p>
-              <p class="conf-item__venue"><em>Vision Sciences Society (VSS) 2026</em> &middot; St. Pete Beach, FL</p>
-              <div class="pub__badges">
-                <span class="pub__type">Poster</span>
-              </div>
+              <p class="conf-item__venue"><cite>Vision Sciences Society (VSS) 2026</cite>&nbsp;&middot; <span class="conf-item__loc">St. Pete Beach, FL</span></p>
             </div>
           </div>
         </li>
         <li class="reveal">
           <div class="conf-item">
-            <div class="conf-item__date">Feb 2026</div>
+            <div class="conf-item__date"><time datetime="2026-02">Feb</time><span class="sr-only"> 2026</span></div>
             <div class="conf-item__details">
-              <h3 class="conf-item__title">Real-time single-trial decoding in a calibration-free P300-based BCI using a compact eight-channel EEG configuration</h3>
+              <h4 class="conf-item__title">Real-time single-trial decoding in a calibration-free P300-based BCI using a compact eight-channel EEG configuration</h4>
               <p class="conf-item__authors">J. Kim, C.-E. Yoon, <strong>S. Seo</strong> &amp; S.-P. Kim</p>
-              <p class="conf-item__venue"><em>14th International Conference on Brain&ndash;Computer Interface (BCI) 2026</em> &middot; Jeongseon, South Korea</p>
-              <div class="pub__badges">
-                <span class="pub__type">Poster</span>
-              </div>
+              <p class="conf-item__venue"><cite>14th International Conference on Brain&ndash;Computer Interface (BCI) 2026</cite>&nbsp;&middot; <span class="conf-item__loc">Jeongseon, South Korea</span></p>
             </div>
           </div>
         </li>
+        </ol>
+      </div>
+      <div class="conf-group">
+        <h3 class="conf-group__title">2024</h3>
+        <ol class="conf-list">
         <li class="reveal">
           <div class="conf-item">
-            <div class="conf-item__date">Sep 2024</div>
+            <div class="conf-item__date"><time datetime="2024-09">Sep</time><span class="sr-only"> 2024</span></div>
             <div class="conf-item__details">
-              <h3 class="conf-item__title">Quantitative EEG analysis for comparing drug-induced parkinsonism and Parkinson's disease</h3>
+              <h4 class="conf-item__title">Quantitative EEG analysis for comparing drug-induced parkinsonism and Parkinson's disease</h4>
               <p class="conf-item__authors"><strong>S. Seo</strong>, S. Kim, S.-P. Kim, J. Kim, D. Chung &amp; S. Y. Kang</p>
-              <p class="conf-item__venue"><em>International Congress of Parkinson's Disease and Movement Disorders 2024</em> &middot; Philadelphia, PA</p>
-              <div class="pub__badges">
-                <span class="pub__type">Poster</span>
-              </div>
+              <p class="conf-item__venue"><cite>International Congress of Parkinson's Disease and Movement Disorders 2024</cite>&nbsp;&middot; <span class="conf-item__loc">Philadelphia, PA</span></p>
             </div>
           </div>
         </li>
+        </ol>
+      </div>
+      <div class="conf-group">
+        <h3 class="conf-group__title">2022</h3>
+        <ol class="conf-list">
         <li class="reveal">
           <div class="conf-item">
-            <div class="conf-item__date">Nov 2022</div>
+            <div class="conf-item__date"><time datetime="2022-11">Nov</time><span class="sr-only"> 2022</span></div>
             <div class="conf-item__details">
-              <h3 class="conf-item__title">Somatosensory cortical representations of assimilation effects by vibrotactile stimulation: an fMRI study</h3>
+              <h4 class="conf-item__title">Somatosensory cortical representations of assimilation effects by vibrotactile stimulation: an fMRI study</h4>
               <p class="conf-item__authors">J.-H. Kim, J. Kim, <strong>S. Seo</strong> &amp; S.-P. Kim</p>
-              <p class="conf-item__venue"><em>Society for Neuroscience (SfN) 2022</em> &middot; San Diego, CA</p>
-              <div class="pub__badges">
-                <span class="pub__type">Poster</span>
-              </div>
+              <p class="conf-item__venue"><cite>Society for Neuroscience (SfN) 2022</cite>&nbsp;&middot; <span class="conf-item__loc">San Diego, CA</span></p>
             </div>
           </div>
         </li>
         <li class="reveal">
           <div class="conf-item">
-            <div class="conf-item__date">Sep 2022</div>
+            <div class="conf-item__date"><time datetime="2022-09">Sep</time><span class="sr-only"> 2022</span></div>
             <div class="conf-item__details">
-              <h3 class="conf-item__title">Preference modulates the effect of choice overload with less involvement of working memory</h3>
+              <h4 class="conf-item__title">Preference modulates the effect of choice overload with less involvement of working memory</h4>
               <p class="conf-item__authors"><strong>S. Seo</strong>, S. Lee, N. Lee &amp; S.-P. Kim</p>
-              <p class="conf-item__venue"><em>International Congress of Physiological Anthropology 2022</em> &middot; Eugene, OR</p>
-              <div class="pub__badges">
-                <span class="pub__type">Poster</span>
-              </div>
+              <p class="conf-item__venue"><cite>International Congress of Physiological Anthropology 2022</cite>&nbsp;&middot; <span class="conf-item__loc">Eugene, OR</span></p>
             </div>
           </div>
         </li>
         <li class="reveal">
           <div class="conf-item">
-            <div class="conf-item__date">May 2022</div>
+            <div class="conf-item__date"><time datetime="2022-05">May</time><span class="sr-only"> 2022</span></div>
             <div class="conf-item__details">
-              <h3 class="conf-item__title">Attenuated working memory accounts for choice overload in highly preferred alternatives</h3>
+              <h4 class="conf-item__title">Attenuated working memory accounts for choice overload in highly preferred alternatives</h4>
               <p class="conf-item__authors">S. Lee*, <strong>S. Seo*</strong>, N. Lee &amp; S.-P. Kim</p>
-              <p class="conf-item__venue"><em>25th Annual Meeting of the Korean Society for Brain and Neural Sciences</em> &middot; Incheon, South Korea</p>
-              <div class="pub__badges">
-                <span class="pub__type">Poster</span>
-              </div>
+              <p class="conf-item__venue"><cite>25th Annual Meeting of the Korean Society for Brain and Neural Sciences</cite>&nbsp;&middot; <span class="conf-item__loc">Incheon, South Korea</span></p>
             </div>
           </div>
         </li>
-      </ol>
+        </ol>
+      </div>
       <!-- TODO(content): photo-card design, parked while the section runs as a
            publications-style list (data source: the CV). To bring the photo dump
            back later, restore this wrapper, fill the cards from the list above,
@@ -629,7 +603,9 @@
   </section>
 
   <!-- Personal -->
-  <section class="section" id="personal">
+  <!-- TODO(content): hidden until real photos exist. To bring it back: remove the
+       hidden attribute, restore the nav link above, and renumber Contact to 07. -->
+  <section class="section" id="personal" hidden>
     <div class="container">
       <h2 class="section__title reveal">
         <span class="section__number" aria-hidden="true">06.</span> Personal
@@ -689,11 +665,11 @@
   <section class="section section--alt" id="contact">
     <div class="container">
       <h2 class="section__title reveal">
-        <span class="section__number" aria-hidden="true">07.</span> Contact
+        <span class="section__number" aria-hidden="true">06.</span> Contact
       </h2>
       <p class="contact__intro reveal">Interested in collaborating or have questions about my research? I'd love to hear from you.</p>
       <div class="contact__links reveal">
-        <a href="mailto:ssb3304@unist.ac.kr" class="contact__link magnetic">
+        <a href="mailto:ssb3304@unist.ac.kr" class="contact__link contact__link--primary magnetic">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           <span>ssb3304@unist.ac.kr</span>
         </a>
@@ -725,6 +701,6 @@
     <p>&copy; 2026 Seungbeom Seo. Built with care.</p>
   </footer>
 
-  <script src="js/main.js?v=6"></script>
+  <script src="js/main.js?v=7"></script>
 </body>
 </html>
